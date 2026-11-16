@@ -22,7 +22,7 @@ const when = new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Accra", weekda
 export function PriorityAndReview({ a }: { a: Action }) {
   const p = a.priority;
   return (
-    <div className="grid gap-3 md:grid-cols-[1.4fr_1fr]">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
       <Link href="/priorities" className="panel group flex gap-3 p-4 transition hover:border-accent/60">
         <Flag className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
         <div className="min-w-0 flex-1">
@@ -74,7 +74,7 @@ export function ActionCentre({ a }: { a: Action }) {
   return (
     <section aria-label="CEO action centre">
       <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold"><CalendarClock className="h-4 w-4 text-accent" />CEO action centre</h2>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <ActionCard title="Today's tasks" count={a.today.length} items={a.today} empty="Nothing due today." href="/priorities?tab=tasks" />
         <ActionCard title="Overdue tasks" count={a.overdue.length} items={a.overdue} empty="No overdue tasks." href="/priorities?tab=tasks&overdue=1" tone="red" />
         <ActionCard title="Upcoming deadlines" count={a.deadlines.length} items={a.deadlines} empty="No deadlines in the next 7 days." href="/priorities?tab=tasks" />

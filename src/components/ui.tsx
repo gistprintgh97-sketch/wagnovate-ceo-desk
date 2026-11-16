@@ -121,7 +121,7 @@ export function Progress({ value, tone = "accent", className }: { value: number;
 
 export function Tabs<T extends string>({ tabs, value, onChange }: { tabs: { id: T; label: string; count?: number }[]; value: T; onChange: (v: T) => void }) {
   return (
-    <div role="tablist" className="no-print mb-4 flex gap-1 overflow-x-auto rounded-xl border border-line bg-panel p-1">
+    <div role="tablist" className="no-print mb-4 flex flex-wrap gap-1 rounded-xl border border-line bg-panel p-1">
       {tabs.map((t) => (
         <button key={t.id} role="tab" aria-selected={value === t.id} onClick={() => onChange(t.id)}
           className={cn("relative whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition", value === t.id ? "text-fg" : "text-muted hover:text-fg")}>

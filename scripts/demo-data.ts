@@ -41,7 +41,8 @@ async function main() {
   for (const [category, annual] of targets) await db.target.create({ data: { year: Y, category, annual } });
 
   // ── projects ──
-  const mk = (data: Prisma.ProjectUncheckedCreateInput) => db.project.create({ data });
+  // The four starting projects may already exist from first-run setup; reuse them instead of duplicating.
+  const mk = async (data: Prisma.ProjectUncheckedCreateInput) => (await db.project.findFirst({ where: { name: data.name } })) ?? db.project.create({ data });
   const pSms = await mk({ name: "WAG SMS", category: "WAG_SMS", status: "ACTIVE", startDate: md(Y - 2, 5, 1), description: "School management product." });
   const pPos = await mk({ name: "WAG POS", category: "WAG_POS", status: "ACTIVE", startDate: md(Y - 1, 2, 1), description: "Point-of-sale product." });
   await mk({ name: "Internal Business Projects", category: "INTERNAL_TOOLS", status: "ACTIVE", startDate: md(Y, 0, 1) });

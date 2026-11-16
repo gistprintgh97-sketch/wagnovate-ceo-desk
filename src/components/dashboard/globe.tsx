@@ -28,14 +28,15 @@ function toVec(lat: number, lng: number): [number, number, number] {
   return [Math.cos(la) * Math.sin(lo), Math.sin(la), Math.cos(la) * Math.cos(lo)];
 }
 
-export function Globe({ hub, customers, unplotted }: { hub: Hub; customers: GlobeCustomer[]; unplotted: number }) {
+export function Globe({ hub, customers, unplotted, selectedId, onSelect }: { hub: Hub; customers: GlobeCustomer[]; unplotted: number; selectedId: string | null; onSelect: (c: GlobeCustomer | null) => void }) {
   const wrap = useRef<HTMLDivElement>(null);
   const cv = useRef<HTMLCanvasElement>(null);
   const colors = useThemeColors();
   const reduced = useReducedMotion();
-  const [selected, setSelected] = useState<GlobeCustomer | null>(null);
+  const selected = customers.find((c) => c.id === selectedId) ?? null;
+  const setSelected = onSelect;
   const [dots, setDots] = useState<[number, number][]>([]);
-  const st = useRef({ lng: hub.lng, lat: 12, vLng: 0, drag: false, lastX: 0, lastY: 0, moved: 0, hover: false, hit: [] as { x: number; y: number; c: GlobeCustomer | "hub" }[] });
+  const st = useRef({ zoom: 1, lng: hub.lng, lat: 12, vLng: 0, drag: false, lastX: 0, lastY: 0, moved: 0, hover: false, hit: [] as { x: number; y: number; c: GlobeCustomer | "hub" }[] });
   const live = useRef({ colors, customers, selected, hub, dots, reduced });
   live.current = { colors, customers, selected, hub, dots, reduced };
 
@@ -57,13 +58,19 @@ export function Globe({ hub, customers, unplotted }: { hub: Hub; customers: Glob
     const frame = (time: number) => {
       const { colors: c, customers: cs, selected: sel, hub: hb, dots: pts, reduced: rm } = live.current;
       const s = st.current;
-      if (!s.drag) {
+      if (sel && !s.drag) {
+        // drill-down: fly to the customer and zoom in, easing out (spring-like)
+        let dl = ((sel.lng - s.lng + 540) % 360) - 180;
+        if (rm) dl = 0, s.lng = sel.lng;
+        s.lng += dl * 0.09; s.lat += (Math.max(-50, Math.min(50, sel.lat * 0.6)) - s.lat) * 0.09; s.vLng = 0;
+      } else if (!s.drag) {
         if (Math.abs(s.vLng) > 0.002) { s.lng += s.vLng; s.vLng *= 0.95; }
-        else if (!rm && !s.hover && !sel) s.lng += 0.06;
+        else if (!rm && !s.hover) s.lng += 0.06;
       }
+      s.zoom += ((sel ? 1.4 : 1) - s.zoom) * (rm ? 1 : 0.08);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      const R = Math.min(w, h) * 0.46, cx = w / 2, cy = h / 2;
+      const R = Math.min(w, h) * 0.46 * s.zoom, cx = w / 2, cy = h / 2;
       const phi0 = s.lat * RAD, lam0 = s.lng * RAD;
       const sp = Math.sin(phi0), cp = Math.cos(phi0);
       // returns screen x, y and depth (>0 = facing us) for a unit vector (x east, y north, z toward lng 0)
@@ -170,7 +177,7 @@ export function Globe({ hub, customers, unplotted }: { hub: Hub; customers: Glob
       if (hit && hit.h.c !== "hub") setSelected(hit.h.c); else setSelected(null);
     }
   }
-  const focusOn = (cu: GlobeCustomer) => { setSelected(cu); st.current.lng = cu.lng; st.current.lat = Math.max(-50, Math.min(50, cu.lat * 0.6)); st.current.vLng = 0; };
+  const focusOn = (cu: GlobeCustomer) => setSelected(cu);
 
   return (
     <div>
@@ -184,15 +191,9 @@ export function Globe({ hub, customers, unplotted }: { hub: Hub; customers: Glob
           </div>
         )}
         {selected && (
-          <div className="absolute right-2 top-2 w-60 rounded-xl border border-line bg-panel/95 p-3 text-sm shadow-soft backdrop-blur" role="dialog" aria-label={`${selected.name} details`}>
-            <button aria-label="Close details" className="absolute right-2 top-2 text-muted hover:text-fg" onClick={() => setSelected(null)}><X className="h-4 w-4" /></button>
-            <p className="pr-5 font-semibold">{selected.name}</p>
-            <p className="text-xs text-muted">{selected.location}</p>
-            <dl className="mt-2 grid grid-cols-2 gap-2 text-xs">
-              <div><dt className="eyebrow">Paid</dt><dd className="num">{ghs(selected.paid)}</dd></div>
-              <div><dt className="eyebrow">Outstanding</dt><dd className={`num ${selected.outstanding > 0 ? "text-warn" : ""}`}>{ghs(selected.outstanding)}</dd></div>
-            </dl>
-            <Link href={`/customers?customer=${selected.id}`} className="mt-2 inline-flex items-center gap-1 text-xs text-accent hover:underline">Open customer profile<ArrowUpRight className="h-3 w-3" /></Link>
+          <div className="absolute left-2 top-2 flex items-center gap-2 rounded-lg border border-accent/40 bg-panel/90 px-2.5 py-1.5 text-xs backdrop-blur" role="status">
+            <span className="h-2 w-2 animate-pulseDot rounded-full bg-cyan" /><span className="font-medium">{selected.name}</span><span className="text-muted">{selected.place}</span>
+            <button aria-label="Back to overview" className="ml-1 text-muted hover:text-fg" onClick={() => setSelected(null)}><X className="h-3.5 w-3.5" /></button>
           </div>
         )}
       </div>

@@ -183,7 +183,7 @@ async function applyRules(def: ResourceDef, data: Record<string, any>, existing:
     }
     case "transactions": {
       const valid = (merged.type === "INCOME" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => c.value);
-      if (!valid.includes(merged.category)) throw new AppError(400, `That category belongs to ${merged.type === "INCOME" ? "expenses" : "income"}. Choose a ${merged.type === "INCOME" ? "income" : "expense"} category.`);
+      if (!valid.includes(merged.category)) throw new AppError(400, `That category belongs to ${merged.type === "INCOME" ? "expenses" : "income"}. Choose ${merged.type === "INCOME" ? "an income" : "an expense"} category.`);
       if (merged.invoiceId) {
         if (merged.type !== "INCOME") throw new AppError(400, "Only income can be linked to an invoice.");
         const rem = await invoiceRemaining(merged.invoiceId, existing?.id);

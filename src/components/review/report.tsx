@@ -11,7 +11,7 @@ import type { Payload } from "./steps";
 
 const txt = (v: unknown) => (v === undefined || v === null || v === "" ? <span className="text-muted">Not recorded</span> : String(v));
 function KV({ rows }: { rows: [string, React.ReactNode][] }) {
-  return <dl className="grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">{rows.map(([k, v]) => <div key={k} className="flex justify-between gap-3 border-b border-line/50 py-1"><dt className="text-muted">{k}</dt><dd className="text-right font-medium">{v}</dd></div>)}</dl>;
+  return <dl className="grid grid-cols-1 gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">{rows.map(([k, v]) => <div key={k} className="flex justify-between gap-3 border-b border-line/50 py-1"><dt className="text-muted">{k}</dt><dd className="text-right font-medium">{v}</dd></div>)}</dl>;
 }
 
 /** The professional weekly CEO report: shown for completed reviews, printable, exportable as PDF. */

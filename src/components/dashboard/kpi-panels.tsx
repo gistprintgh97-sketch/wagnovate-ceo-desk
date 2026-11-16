@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
@@ -145,13 +145,33 @@ function alertTime(iso: string) { const d = new Date(iso); const today = accraDa
 
 export function AlertsPanel({ alerts }: { alerts: Alert[] }) {
   const [open, setOpen] = useState<string | null>(null);
+  const [paused, setPaused] = useState(false);
+  const reduced = useReducedMotion();
+  const box = useRef<HTMLUListElement>(null);
+  // Live ticker: the list drifts upward like a feed, pauses on hover/focus/expanded item, then loops back to the top.
+  useEffect(() => {
+    const el = box.current;
+    if (!el || reduced || paused || open) return;
+    let raf = 0, wait = 0, last = performance.now();
+    const tick = (now: number) => {
+      const dt = now - last; last = now;
+      if (el.scrollHeight > el.clientHeight + 4) {
+        if (wait > 0) wait -= dt;
+        else if (el.scrollTop + el.clientHeight >= el.scrollHeight - 1) { wait = 1800; el.scrollTo({ top: 0, behavior: "smooth" }); }
+        else el.scrollTop += dt * 0.018;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [reduced, paused, open, alerts.length]);
   if (!alerts.length) return <EmptyState title="No warnings right now" hint="Warnings appear here when your recorded data shows a risk, such as overdue invoices or unresolved critical problems." />;
   return (
-    <ul className="max-h-[300px] space-y-0.5 overflow-y-auto pr-1">
-      {alerts.map((a) => {
+    <ul ref={box} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)} className="max-h-[300px] space-y-0.5 overflow-y-auto pr-1">
+      {alerts.map((a, idx) => {
         const on = open === a.id;
         return (
-          <li key={a.id} className="border-b border-line/50 last:border-0">
+          <motion.li key={a.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 28, delay: Math.min(idx, 8) * 0.06 }} className="border-b border-line/50 last:border-0">
             <button className="flex w-full items-start gap-2 py-2 text-left" aria-expanded={on} onClick={() => setOpen(on ? null : a.id)}>
               <Badge tone={a.level === "HIGH" ? "red" : a.level === "MEDIUM" ? "orange" : "green"} className="mt-0.5 w-[54px] justify-center">{a.level === "HIGH" ? "High" : a.level === "MEDIUM" ? "Medium" : a.missing ? "Missing" : "Info"}</Badge>
               <span className="min-w-0 flex-1 text-xs leading-snug"><span className={on ? "" : "line-clamp-2"}>{a.title}</span></span>
@@ -165,7 +185,7 @@ export function AlertsPanel({ alerts }: { alerts: Alert[] }) {
                 <Link href={a.link} className="inline-flex items-center gap-1 text-accent hover:underline">Open <ArrowUpRight className="h-3 w-3" /></Link>
               </div>
             )}
-          </li>
+          </motion.li>
         );
       })}
     </ul>

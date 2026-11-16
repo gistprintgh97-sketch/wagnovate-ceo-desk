@@ -68,13 +68,27 @@ export function RecordForm({ def, item, defaults, onDone, onCancel, hide }: { de
   });
   return (
     <form onSubmit={form.handleSubmit((v) => { setServerErr(null); save.mutate(v); })} noValidate>
-      <div className="grid gap-3 sm:grid-cols-2">{def.fields.filter((f) => !f.hidden && !hide?.includes(f.key)).map((f) => <FieldInput key={f.key} f={f} form={form} def={def} />)}</div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{def.fields.filter((f) => !f.hidden && !hide?.includes(f.key)).map((f) => <FieldInput key={f.key} f={f} form={form} def={def} />)}</div>
       {serverErr && <p role="alert" className="mt-3 rounded-lg border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">{serverErr}</p>}
       <div className="mt-4 flex justify-end gap-2">
         <Button type="button" onClick={onCancel}>Cancel</Button>
         <Button type="submit" variant="primary" loading={save.isPending}>{item ? "Save changes" : `Add ${def.label.toLowerCase()}`}</Button>
       </div>
     </form>
+  );
+}
+
+/** A button that opens the add form for any resource (used where the list itself is shown differently, e.g. the pipeline board). */
+export function AddRecordButton({ resource, defaults, children, variant = "primary", onDone }: { resource: string; defaults?: Record<string, any>; children?: ReactNode; variant?: "primary" | "default"; onDone?: () => void }) {
+  const def = RESOURCES[resource];
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant={variant} onClick={() => setOpen(true)}><Plus className="h-4 w-4" />{children ?? `Add ${def.label.toLowerCase()}`}</Button>
+      <Modal open={open} onClose={() => setOpen(false)} title={`Add ${def.label.toLowerCase()}`} wide>
+        {open && <RecordForm def={def} defaults={defaults} onDone={() => { setOpen(false); onDone?.(); }} onCancel={() => setOpen(false)} />}
+      </Modal>
+    </>
   );
 }
 

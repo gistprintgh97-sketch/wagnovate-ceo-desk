@@ -3,7 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { route, AppError } from "@/server/api";
 import { db } from "@/server/db";
 import { anyUserExists, createSession, hashPassword, passwordProblem } from "@/server/auth";
-import { getCompany, getSettings } from "@/server/settings";
+import { ensureInitialProjects, getCompany, getSettings } from "@/server/settings";
 
 const body = z.object({
   token: z.string().min(1, "Enter the setup token from your .env file."),
@@ -27,6 +27,7 @@ export const POST = route({ public: true, body, limit: { key: "setup", max: 10, 
   });
   await getCompany();
   await getSettings();
+  await ensureInitialProjects();
   await createSession(user.id);
   return { ok: true };
 });

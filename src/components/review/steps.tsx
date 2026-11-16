@@ -92,7 +92,7 @@ export function Step3({ p, d, set, weekQuery, weekDefault }: P) {
         <Stat label="Unresolved complaints" value={f.unresolved.length} tone={f.unresolved.length ? "bad" : undefined} />
         <Stat label="Customers at risk" value={f.atRisk.length} tone={f.atRisk.length ? "warn" : undefined} />
       </Grid>
-      <div className="mb-4 grid gap-3 md:grid-cols-3">
+      <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
         <Panel title="Unresolved complaints"><List empty="No outstanding customer complaints." items={f.unresolved.map((u) => <span key={u.customer + u.comments}><b>{u.customer}</b> · {label(u.category)} — {u.comments}</span>)} /></Panel>
         <Panel title="Repeated technical problems"><List empty="No customer has repeated technical problems." items={f.repeatedTechnical.map((r) => <span key={r.customer}><b>{r.customer}</b> · {r.count} issues in 90 days</span>)} /></Panel>
         <Panel title="Follow-up required"><List empty="No customer follow-ups are due." items={[...f.followUps.map((x) => <span key={x.customer + x.due}><b>{x.customer}</b> · due {x.due ? fmtDate(x.due) : "—"}</span>), ...f.atRisk.map((n) => <span key={n}><b>{n}</b> · at risk of leaving</span>)]} /></Panel>
@@ -141,7 +141,7 @@ export function Step6({ p, d, set, weekQuery, weekDefault }: P) {
   return (
     <>
       <p className="mb-3 text-sm text-muted">What did this week teach you as a founder? Each answer you fill in is saved to the lessons library when you complete the review.</p>
-      <div className="mb-5 grid gap-3 md:grid-cols-2">
+      <div className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-2">
         {QUESTIONS.map(([k, q, hint]) => (
           <div key={k}><Label htmlFor={`s6-${k}`}>{q}</Label><textarea id={`s6-${k}`} rows={3} className="field" placeholder={hint} value={d.s6?.[k] ?? ""} onChange={(e) => set("s6", k, e.target.value)} /></div>
         ))}
@@ -173,7 +173,7 @@ export function Step7({ p, prior, setPrior }: P & { prior: PriorState; setPrior:
             ))}
           </div>
           {prior.outcome && prior.outcome !== "COMPLETED" && (
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="md:col-span-2"><Label htmlFor="prior-why" required>Why was it not fully completed?</Label><textarea id="prior-why" rows={2} className="field" value={prior.explanation} onChange={(e) => setPrior({ explanation: e.target.value })} /></div>
               <div className="md:col-span-2"><Label required>What will you do with it?</Label>
                 <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Reschedule or replace">
@@ -191,7 +191,7 @@ export function Step7({ p, prior, setPrior }: P & { prior: PriorState; setPrior:
           <div className="rounded-xl border border-accent/40 bg-accent/5 p-3">
             <div className="flex items-start justify-between gap-2"><p className="text-base font-semibold">{p.next.title}</p><Button onClick={() => setEditing(true)}><Pencil className="h-4 w-4" />Edit</Button></div>
             <div className="mt-1 flex flex-wrap gap-2"><Badge tone="violet">{label(p.next.category)}</Badge><Badge tone={statusTone(p.next.status)}>{label(p.next.status)}</Badge><span className="num text-xs text-muted">Deadline {fmtDate(parseDate(p.next.deadline))}</span></div>
-            <dl className="mt-2 grid gap-2 text-sm md:grid-cols-2">
+            <dl className="mt-2 grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
               <div><dt className="eyebrow">Objective</dt><dd>{p.next.objective}</dd></div><div><dt className="eyebrow">Expected result</dt><dd>{p.next.expectedResult}</dd></div>
               <div><dt className="eyebrow">First action</dt><dd>{p.next.firstAction}</dd></div><div><dt className="eyebrow">Success measure</dt><dd>{p.next.successMeasure}</dd></div>
             </dl>
