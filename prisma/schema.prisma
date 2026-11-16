@@ -1,0 +1,577 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────── enums ─────────
+enum Role {
+  OWNER
+  STAFF
+}
+enum ProductCategory {
+  WAG_SMS
+  WAG_POS
+  CLIENT_PROJECTS
+  INTERNAL_TOOLS
+  OTHER
+}
+enum WorkStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+enum LeadStage {
+  NEW_LEAD
+  CONTACTED
+  INTERESTED
+  DEMO_SCHEDULED
+  PROPOSAL_SENT
+  NEGOTIATION
+  WON
+  LOST
+}
+enum CustomerStatus {
+  PROSPECT
+  ACTIVE
+  AT_RISK
+  CHURNED
+}
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  COMPLETED
+}
+enum FeedbackCategory {
+  POSITIVE
+  FEATURE_REQUEST
+  TECHNICAL_ISSUE
+  COMPLAINT
+  BILLING_ISSUE
+  SUGGESTION
+}
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+enum ResolutionStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  NOT_APPLICABLE
+}
+enum TxType {
+  INCOME
+  EXPENSE
+}
+enum PaymentMethod {
+  MTN_MOMO
+  TELECEL_CASH
+  AIRTELTIGO_MONEY
+  BANK_TRANSFER
+  CASH
+  CARD
+  OTHER
+}
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  CANCELLED
+}
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+enum Department {
+  ENGINEERING
+  PRODUCT
+  SALES
+  FINANCE
+  OPERATIONS
+  CUSTOMER_SUPPORT
+  LEADERSHIP
+}
+enum ProblemStatus {
+  OPEN
+  INVESTIGATING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+enum PriorityCategory {
+  ENGINEERING
+  PRODUCT
+  SALES
+  FINANCE
+  LEADERSHIP
+}
+enum PriorityStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  CANCELLED
+}
+enum PriorityOutcome {
+  COMPLETED
+  PARTIAL
+  NOT_COMPLETED
+}
+enum ReviewStatus {
+  DRAFT
+  COMPLETED
+}
+
+// ───────── identity ─────────
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String
+  role          Role      @default(OWNER)
+  avatarDocId   String?
+  failedLogins  Int       @default(0)
+  lockedUntil   DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  resetTokens   PasswordResetToken[]
+  pushSubs      PushSubscription[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ───────── company & settings (single rows) ─────────
+model Company {
+  id         String   @id @default("company")
+  name       String   @default("WAGNOVATE Technologies")
+  slogan     String   @default("Custom Software for Modern Businesses.")
+  website    String   @default("https://wagnovate.com")
+  email      String?
+  phone      String?
+  address    String   @default("Accra, Ghana")
+  currency   String   @default("GHS")
+  timezone   String   @default("Africa/Accra")
+  logoDocId  String?
+  updatedAt  DateTime @updatedAt
+}
+
+model ApplicationSettings {
+  id                 String   @id @default("settings")
+  theme              String   @default("dark") // dark | light | system
+  reviewDay          Int      @default(0)       // 0 = Sunday
+  reviewTime         String   @default("18:00") // HH:mm Africa/Accra
+  reviewEveryWeeks   Int      @default(1)
+  notifyReview       Boolean  @default(true)
+  notifyTasks        Boolean  @default(true)
+  notifyFollowUps    Boolean  @default(true)
+  notifyInvoices     Boolean  @default(true)
+  notifyProblems     Boolean  @default(true)
+  notifyPriority     Boolean  @default(true)
+  notifyContracts    Boolean  @default(true)
+  aiProvider         String   @default("none") // none | anthropic | openai
+  aiModel            String?
+  aiBaseUrl          String?
+  aiKeyEnc           String?                    // AES-256-GCM encrypted, never sent to browser
+  aiAutoSummary      Boolean  @default(true)
+  lowConversionPct   Int      @default(20)
+  updatedAt          DateTime @updatedAt
+}
+
+// Annual revenue target per income category (spread evenly across 12 months).
+model Target {
+  id        String   @id @default(cuid())
+  year      Int
+  category  String   // income category key, or "TOTAL"
+  annual    Decimal  @db.Decimal(14, 2)
+  updatedAt DateTime @updatedAt
+  @@unique([year, category])
+}
+
+// ───────── weekly review ─────────
+model CEOReview {
+  id              String          @id @default(cuid())
+  weekStart       DateTime        @db.Date  // Monday of the week under review
+  weekEnd         DateTime        @db.Date  // Sunday
+  status          ReviewStatus    @default(DRAFT)
+  currentStep     Int             @default(1)
+  data            Json            @default("{}")   // narrative + manual counters per step
+  priorOutcome    PriorityOutcome?
+  priorExplanation String?
+  priorAction     String?          // RESCHEDULED | REPLACED | NONE
+  summary         String?
+  summarySource   String?          // AI | RULES
+  snapshot        Json?            // metrics frozen at completion so history never changes
+  completedAt     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  priorities      StrategicPriority[]
+  @@unique([weekStart])
+}
+
+model StrategicPriority {
+  id              String           @id @default(cuid())
+  reviewId        String?
+  weekStart       DateTime         @db.Date // the week this priority applies to
+  category        PriorityCategory
+  title           String
+  objective       String
+  expectedResult  String
+  firstAction     String
+  deadline        DateTime         @db.Date
+  successMeasure  String
+  status          PriorityStatus   @default(NOT_STARTED)
+  outcome         PriorityOutcome?
+  outcomeNote     String?
+  supersededById  String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  review          CEOReview?       @relation(fields: [reviewId], references: [id])
+  tasks           Task[]
+  @@unique([weekStart]) // exactly ONE primary priority per week
+}
+
+// ───────── engineering ─────────
+model EngineeringAchievement {
+  id          String          @id @default(cuid())
+  category    ProductCategory
+  projectName String
+  title       String
+  description String?
+  kind        String          @default("Feature") // Feature | Bug fix | Technical | Infrastructure | Security | Client delivery | Outstanding
+  status      WorkStatus      @default(COMPLETED)
+  completedAt DateTime?       @db.Date
+  hours       Decimal?        @db.Decimal(6, 1)
+  impact      String?
+  projectId   String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+  project     Project?        @relation(fields: [projectId], references: [id])
+  @@index([completedAt])
+}
+
+// ───────── sales & CRM ─────────
+model SalesLead {
+  id            String    @id @default(cuid())
+  businessName  String
+  contactPerson String?
+  phone         String?
+  email         String?
+  product       String?
+  value         Decimal   @default(0) @db.Decimal(14, 2)
+  stage         LeadStage @default(NEW_LEAD)
+  nextFollowUp  DateTime? @db.Date
+  notes         String?
+  stageChangedAt DateTime @default(now())
+  customerId    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  @@index([stage])
+  @@index([nextFollowUp])
+}
+
+model Customer {
+  id            String         @id @default(cuid())
+  name          String
+  contactPerson String?
+  phone         String?
+  email         String?
+  location      String?
+  product       String?
+  status        CustomerStatus @default(ACTIVE)
+  notes         String?
+  since         DateTime?      @db.Date
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  contracts     Contract[]
+  invoices      Invoice[]
+  projects      Project[]
+  feedback      CustomerFeedback[]
+  transactions  FinancialTransaction[]
+  leads         SalesLead[]
+  documents     UploadedDocument[]
+  @@index([status])
+}
+
+model Contract {
+  id                 String         @id @default(cuid())
+  customerId         String
+  title              String
+  product            String?
+  value              Decimal        @db.Decimal(14, 2)
+  signedDate         DateTime?      @db.Date
+  startDate          DateTime       @db.Date
+  endDate            DateTime?      @db.Date
+  paymentArrangement String?
+  status             ContractStatus @default(ACTIVE)
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  deletedAt          DateTime?
+  customer           Customer       @relation(fields: [customerId], references: [id])
+  invoices           Invoice[]
+  transactions       FinancialTransaction[]
+  documents          UploadedDocument[]
+  @@index([endDate])
+}
+
+model CustomerFeedback {
+  id           String           @id @default(cuid())
+  customerId   String
+  product      String?
+  date         DateTime         @db.Date
+  category     FeedbackCategory
+  comments     String
+  rating       Int?
+  severity     Severity?
+  resolution   ResolutionStatus @default(OPEN)
+  actionRequired String?
+  followUpDate DateTime?        @db.Date
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  deletedAt    DateTime?
+  customer     Customer         @relation(fields: [customerId], references: [id])
+  @@index([date])
+}
+
+// ───────── finance ─────────
+model FinancialTransaction {
+  id            String        @id @default(cuid())
+  title         String
+  type          TxType
+  amount        Decimal       @db.Decimal(14, 2)
+  category      String
+  date          DateTime      @db.Date
+  paymentMethod PaymentMethod @default(MTN_MOMO)
+  customerId    String?
+  projectId     String?
+  invoiceId     String?
+  contractId    String?
+  reference     String?
+  description   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  customer      Customer?     @relation(fields: [customerId], references: [id])
+  project       Project?      @relation(fields: [projectId], references: [id])
+  invoice       Invoice?      @relation(fields: [invoiceId], references: [id])
+  contract      Contract?     @relation(fields: [contractId], references: [id])
+  documents     UploadedDocument[]
+  @@index([date])
+  @@index([type, date])
+}
+
+model Invoice {
+  id         String        @id @default(cuid())
+  number     String        @unique
+  customerId String
+  contractId String?
+  projectId  String?
+  category   String        @default("SOFTWARE_DEVELOPMENT")
+  amount     Decimal       @db.Decimal(14, 2)
+  issueDate  DateTime      @db.Date
+  dueDate    DateTime      @db.Date
+  status     InvoiceStatus @default(SENT)
+  notes      String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  deletedAt  DateTime?
+  customer   Customer      @relation(fields: [customerId], references: [id])
+  contract   Contract?     @relation(fields: [contractId], references: [id])
+  project    Project?      @relation(fields: [projectId], references: [id])
+  payments   FinancialTransaction[]
+  @@index([dueDate])
+}
+
+// ───────── projects & tasks ─────────
+model Project {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  customerId  String?
+  category    ProductCategory @default(CLIENT_PROJECTS)
+  startDate   DateTime?       @db.Date
+  targetDate  DateTime?       @db.Date
+  completedAt DateTime?       @db.Date
+  status      ProjectStatus   @default(ACTIVE)
+  budget      Decimal         @default(0) @db.Decimal(14, 2)
+  notes       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+  customer    Customer?       @relation(fields: [customerId], references: [id])
+  milestones  ProjectMilestone[]
+  tasks       Task[]
+  achievements EngineeringAchievement[]
+  transactions FinancialTransaction[]
+  invoices    Invoice[]
+  problems    BusinessProblem[]
+  lessons     LessonLearned[]
+  documents   UploadedDocument[]
+}
+
+model ProjectMilestone {
+  id        String    @id @default(cuid())
+  projectId String
+  title     String
+  dueDate   DateTime? @db.Date
+  doneAt    DateTime? @db.Date
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  project   Project   @relation(fields: [projectId], references: [id])
+}
+
+model Task {
+  id           String       @id @default(cuid())
+  title        String
+  description  String?
+  department   Department   @default(ENGINEERING)
+  priority     TaskPriority @default(MEDIUM)
+  startDate    DateTime?    @db.Date
+  dueDate      DateTime?    @db.Date
+  status       TaskStatus   @default(TODO)
+  projectId    String?
+  priorityId   String?
+  completedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  project      Project?     @relation(fields: [projectId], references: [id])
+  strategicPriority StrategicPriority? @relation(fields: [priorityId], references: [id])
+  @@index([dueDate])
+  @@index([status])
+}
+
+// ───────── problems & lessons ─────────
+model BusinessProblem {
+  id             String        @id @default(cuid())
+  title          String
+  description    String?
+  department     Department    @default(ENGINEERING)
+  rootCause      String?
+  severity       Severity      @default(MEDIUM)
+  businessImpact String?
+  solution       String?
+  assignedTo     String?
+  status         ProblemStatus @default(OPEN)
+  identifiedAt   DateTime      @db.Date
+  deadline       DateTime?     @db.Date
+  resolvedAt     DateTime?     @db.Date
+  lessons        String?
+  projectId      String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  project        Project?      @relation(fields: [projectId], references: [id])
+  @@index([status, severity])
+}
+
+model LessonLearned {
+  id             String    @id @default(cuid())
+  title          String
+  description    String
+  category       String    @default("LESSON") // WORKED | FAILED | WASTED | STOP | START | IMPROVE | DELEGATE | LESSON
+  date           DateTime  @db.Date
+  projectId      String?
+  proposedAction String?
+  reviewId       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  project        Project?  @relation(fields: [projectId], references: [id])
+  @@index([date])
+}
+
+// ───────── notifications, files, push ─────────
+model Notification {
+  id         String    @id @default(cuid())
+  type       String    // WEEKLY_REVIEW | TASK_DUE | TASK_OVERDUE | FOLLOW_UP | INVOICE | PROBLEM | PRIORITY | CONTRACT
+  title      String
+  body       String
+  link       String?
+  dedupeKey  String    @unique // prevents duplicate reminders
+  readAt     DateTime?
+  pushedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  @@index([readAt, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UploadedDocument {
+  id            String    @id @default(cuid())
+  purpose       String    @default("DOCUMENT") // LOGO | AVATAR | DOCUMENT | RECEIPT | CONTRACT
+  originalName  String
+  storedName    String    @unique
+  mime          String
+  size          Int
+  customerId    String?
+  contractId    String?
+  projectId     String?
+  transactionId String?
+  createdAt     DateTime  @default(now())
+  deletedAt     DateTime?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  contract      Contract? @relation(fields: [contractId], references: [id])
+  project       Project?  @relation(fields: [projectId], references: [id])
+  transaction   FinancialTransaction? @relation(fields: [transactionId], references: [id])
+}

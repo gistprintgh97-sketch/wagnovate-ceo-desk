@@ -1,0 +1,1280 @@
+# MASTER DEVELOPMENT PROMPT — WAGNOVATE CEO DESK
+
+## 1. YOUR ROLE
+
+Act as a senior full-stack software engineer, SaaS architect, UI/UX designer, database architect and product engineer.
+
+Your assignment is to design, develop, test and deliver a complete, production-ready application called:
+
+**WAGNOVATE CEO DESK**
+
+Tagline: **Lead Better. Measure Progress. Build Bigger.**
+
+This is an executive business management application designed for the founder and CEO of WAGNOVATE Technologies.
+
+Do not build a static dashboard, a landing page, a UI prototype or a collection of disconnected forms. Build a fully functional application with a real database, authentication, persistent records, business calculations, interactive charts, notifications and complete CRUD operations.
+
+You have permission to inspect the existing project, create the necessary files, install dependencies, configure the database and implement the complete system.
+
+Do not stop after generating the interface. Complete the working application.
+
+---
+
+# 2. BUSINESS IDENTITY
+
+Use the following company information throughout the application.
+
+- Company: WAGNOVATE Technologies
+- Founder/CEO: Wallace Gideon
+- Industry: Software Engineering, Software Development and Technology Solutions
+- Location: Accra, Ghana
+- Currency: Ghana Cedis (GHS)
+- Timezone: Africa/Accra
+- Website: https://wagnovate.com
+- Primary products: WAG SMS and WAG POS
+- Business slogan: Custom Software for Modern Businesses.
+
+The company name must always appear as WAGNOVATE Technologies, not WAG Technologies or WAG Systems.
+
+Create a professional branding system using the company's identity. Allow the company logo to be uploaded through Settings. Do not invent a replacement logo.
+
+---
+
+# 3. TECHNOLOGY STACK
+
+Use a modern, maintainable architecture.
+
+Preferred technologies:
+
+**Frontend**
+- Next.js with App Router.
+- React.
+- TypeScript.
+- Tailwind CSS.
+- shadcn/ui.
+- Lucide icons.
+- Recharts for analytics and financial charts.
+- React Hook Form and Zod for form validation.
+
+**Backend**
+- Next.js server-side API architecture or a properly separated backend.
+- Node.js.
+- PostgreSQL.
+- Prisma ORM.
+- Secure authentication and session management.
+
+**Additional technologies**
+- Progressive Web App (PWA).
+- Service workers.
+- Browser notifications.
+- Responsive application architecture.
+- Secure file uploads.
+- PDF and CSV export functionality.
+
+If an existing repository already has a suitable architecture, inspect it and preserve compatible technologies instead of unnecessarily replacing the entire project.
+
+Use current stable package versions and follow their official documentation.
+
+---
+
+# 4. APPLICATION DESIGN AND EXPERIENCE
+
+Create a premium executive dashboard.
+
+The interface should feel like a professional financial management platform combined with a modern executive productivity application.
+
+### Visual direction
+
+- Clean iOS 17-inspired design.
+- Professional white/light and dark themes.
+- Refined typography.
+- Generous spacing.
+- Subtle shadows.
+- Rounded cards.
+- Elegant transitions.
+- Consistent design tokens.
+- Professional charts and data visualizations.
+- Real Lucide icons.
+- No decorative emojis.
+- No excessive gradients.
+- No cluttered dashboards.
+
+Use a responsive sidebar on desktop and a mobile-friendly navigation system on smaller screens.
+
+### Desktop navigation
+
+1. Overview
+2. Weekly CEO Review
+3. Engineering & Products
+4. Sales & Contracts
+5. Customers & Feedback
+6. Finance
+7. Problems & Lessons
+8. Strategic Priorities
+9. Reports & Analytics
+10. Settings
+
+### Mobile navigation
+
+Provide a compact bottom navigation with access to the most important sections.
+
+Ensure the entire application works properly on a small Android screen without horizontal scrolling.
+
+---
+
+# 5. EXECUTIVE DASHBOARD
+
+This is the first screen the CEO sees after authentication.
+
+Display a personalized greeting:
+
+"Good morning, CEO."
+
+Below it:
+
+"WAGNOVATE Technologies — Executive Overview"
+
+Include a date indicator and the current week.
+
+### Dashboard KPI cards
+
+Display:
+
+1. Total Revenue
+2. Total Expenses
+3. Net Operating Cash Flow
+4. Active Customers
+5. New Contracts
+6. Outstanding Invoices
+7. Active Projects
+8. Completed Projects
+
+All metrics must be calculated from actual database records.
+
+Never use hardcoded figures to simulate business performance.
+
+### Financial visualization
+
+Create:
+
+- Weekly revenue versus expenses.
+- Monthly revenue trends.
+- Monthly expense trends.
+- Net cash flow.
+- Outstanding invoices.
+- Revenue by product or service.
+
+### Business performance visualization
+
+Create:
+
+- Sales pipeline.
+- New customers acquired.
+- Customer retention.
+- Projects completed.
+- Weekly productivity.
+- Priority completion rate.
+
+### CEO action centre
+
+Display:
+
+- Today's tasks.
+- Overdue tasks.
+- Upcoming deadlines.
+- Pending customer follow-ups.
+- Unpaid invoices.
+- Unresolved major problems.
+- Next weekly CEO review.
+- Current strategic priority.
+
+Provide clickable cards that navigate to their corresponding records.
+
+---
+
+# 6. WEEKLY CEO REVIEW SYSTEM
+
+THIS IS THE MOST IMPORTANT MODULE.
+
+Build a complete guided weekly review system based on seven executive assessment areas.
+
+The review should happen every Sunday.
+
+Default reminder:
+Sunday at 6:00 PM, Africa/Accra.
+
+Allow the CEO to change the reminder time and frequency.
+
+Every review must be saved as a historical record.
+
+Never overwrite previous reviews when a new week begins.
+
+### Review structure
+
+## SECTION 1: ENGINEERING AND PRODUCT DEVELOPMENT
+
+Question:
+
+"What did I build this week?"
+
+Allow the CEO to record:
+
+- Features developed.
+- Features completed.
+- Bugs fixed.
+- Technical improvements.
+- Infrastructure improvements.
+- Security improvements.
+- Client projects delivered.
+- Outstanding development work.
+
+For each achievement, capture:
+
+- Project/product name.
+- Description.
+- Status.
+- Date completed.
+- Time invested (optional).
+- Business impact.
+
+Provide product categories:
+
+- WAG SMS.
+- WAG POS.
+- Client Projects.
+- Internal Tools.
+- Other.
+
+Show the total completed engineering tasks for the week.
+
+## SECTION 2: SALES AND BUSINESS DEVELOPMENT
+
+Question:
+
+"What did I sell this week?"
+
+Track:
+
+- New prospects contacted.
+- Demonstrations conducted.
+- Quotations submitted.
+- Proposals submitted.
+- Contracts signed.
+- Deals lost.
+- Existing prospects followed up.
+- Potential contract value.
+
+Create a sales pipeline with these stages:
+
+1. New Lead.
+2. Contacted.
+3. Interested.
+4. Demonstration Scheduled.
+5. Proposal Sent.
+6. Negotiation.
+7. Won.
+8. Lost.
+
+Each opportunity must contain:
+
+- Customer/business name.
+- Contact person.
+- Phone number.
+- Email.
+- Product or service.
+- Expected contract value.
+- Current stage.
+- Next follow-up date.
+- Notes.
+
+Calculate conversion rates and sales pipeline value.
+
+Distinguish between potential revenue, signed contracts, invoiced revenue and cash actually received.
+
+## SECTION 3: CUSTOMER FEEDBACK AND RETENTION
+
+Question:
+
+"Are customers satisfied with our products and services?"
+
+Build a customer feedback management module.
+
+Capture:
+
+- Customer name.
+- Product/service used.
+- Feedback date.
+- Feedback category.
+- Customer comments.
+- Satisfaction rating (1–5).
+- Complaint severity.
+- Resolution status.
+- Action required.
+- Follow-up date.
+
+Feedback categories:
+
+- Positive Feedback.
+- Feature Request.
+- Technical Issue.
+- Complaint.
+- Billing Issue.
+- General Suggestion.
+
+Provide customer satisfaction analytics.
+
+Calculate average satisfaction ratings.
+
+Identify:
+
+- Customers with unresolved complaints.
+- Customers with repeated technical problems.
+- Customers requiring follow-up.
+- Customers at risk of leaving.
+
+Do not invent customer feedback or satisfaction ratings.
+
+## SECTION 4: FINANCIAL PERFORMANCE
+
+Question:
+
+"Is WAGNOVATE becoming financially stronger?"
+
+Build a complete financial tracking module.
+
+Currency: GHS.
+
+Allow the CEO to record income and expenses.
+
+### Income categories
+
+- Software Development.
+- WAG SMS Subscriptions.
+- WAG POS Subscriptions.
+- Software Licensing.
+- Software Distribution.
+- Consulting.
+- Maintenance and Support.
+- Hosting and Infrastructure Services.
+- Other Income.
+
+### Expense categories
+
+- Hosting and Servers.
+- Domain and SSL.
+- Software Subscriptions.
+- Developer Tools.
+- Internet and Communication.
+- Marketing and Advertising.
+- Staff Payments.
+- Transportation.
+- Equipment.
+- Office Expenses.
+- Other Expenses.
+
+Every transaction must include:
+
+- Transaction title.
+- Transaction type.
+- Amount.
+- Category.
+- Transaction date.
+- Payment method.
+- Related customer/project (optional).
+- Reference number (optional).
+- Description.
+- Receipt or supporting document (optional).
+
+Payment methods:
+
+- MTN Mobile Money.
+- Telecel Cash.
+- AirtelTigo Money.
+- Bank Transfer.
+- Cash.
+- Card.
+- Other.
+
+### Financial calculations
+
+Automatically calculate:
+
+- Total income received.
+- Total expenses paid.
+- Net cash flow.
+- Monthly revenue.
+- Monthly expenses.
+- Outstanding receivables.
+- Revenue by product.
+- Expenses by category.
+- Month-over-month growth.
+
+Use correct accounting terminology.
+
+Do not label net cash flow as profit. Provide an appropriate profit calculation only when the necessary accounting data exists.
+
+### Financial dashboard
+
+Include:
+
+- Income versus expenses chart.
+- Revenue trend chart.
+- Expense distribution chart.
+- Monthly financial summary.
+- Outstanding payment tracker.
+
+Allow filtering by:
+
+- Today.
+- This week.
+- This month.
+- This quarter.
+- This year.
+- Custom date range.
+
+Provide CSV and PDF exports.
+
+## SECTION 5: MAJOR PROBLEMS AND BOTTLENECKS
+
+Question:
+
+"What prevented WAGNOVATE from progressing this week?"
+
+Build a problem-tracking system.
+
+Capture:
+
+- Problem title.
+- Description.
+- Department.
+- Root cause.
+- Severity.
+- Business impact.
+- Proposed solution.
+- Assigned person.
+- Status.
+- Date identified.
+- Resolution deadline.
+- Resolution date.
+- Lessons learned.
+
+Departments:
+
+- Engineering.
+- Product.
+- Sales.
+- Finance.
+- Operations.
+- Customer Support.
+- Leadership.
+
+Severity levels:
+
+- Low.
+- Medium.
+- High.
+- Critical.
+
+Statuses:
+
+- Open.
+- Investigating.
+- In Progress.
+- Resolved.
+- Closed.
+
+Display unresolved critical problems prominently on the dashboard.
+
+## SECTION 6: LESSONS LEARNED
+
+Question:
+
+"What did this week teach me as a founder?"
+
+Create a guided reflection section.
+
+Capture:
+
+1. What worked well?
+2. What failed?
+3. What wasted time or money?
+4. What should I stop doing?
+5. What should I start doing?
+6. What should I improve?
+7. What should I delegate or automate?
+8. What important lesson did I learn?
+
+Allow the CEO to save multiple lessons.
+
+Each lesson should have:
+
+- Title.
+- Description.
+- Category.
+- Date.
+- Related project (optional).
+- Proposed action.
+
+Build a searchable lessons library.
+
+Allow the CEO to revisit previous lessons.
+
+## SECTION 7: NEXT WEEK'S SINGLE MOST IMPORTANT PRIORITY
+
+Question:
+
+"If I could accomplish only ONE thing next week to make WAGNOVATE more successful, what would it be?"
+
+This section must enforce ONE primary strategic priority per week.
+
+The CEO must choose one category:
+
+- Engineering.
+- Product.
+- Sales.
+- Finance.
+- Leadership.
+
+Capture:
+
+- Priority title.
+- Detailed objective.
+- Expected measurable result.
+- First action.
+- Deadline.
+- Success measurement.
+- Status.
+
+Statuses:
+
+- Not Started.
+- In Progress.
+- Completed.
+- Delayed.
+- Cancelled.
+
+Allow supporting tasks, but do not allow multiple primary priorities for the same review.
+
+The priority must appear prominently on the dashboard throughout the following week.
+
+At the next Sunday review, automatically ask:
+
+"Did you accomplish last week's priority?"
+
+Allow the CEO to select:
+
+- Yes, completed.
+- Partially completed.
+- Not completed.
+
+If incomplete, require an explanation and allow the CEO to reschedule or replace it.
+
+Track historical priority completion rates.
+
+---
+
+# 7. WEEKLY REVIEW EXPERIENCE
+
+Make the review a guided seven-step process.
+
+Use a clean progress indicator.
+
+Example:
+
+Step 1 of 7 — Engineering & Products.
+
+Provide:
+
+- Previous button.
+- Save and Continue.
+- Save Draft.
+- Complete Review.
+
+The CEO should be able to leave the review and continue later without losing data.
+
+Show a review summary before final submission.
+
+After completing the review, generate a professional weekly CEO report containing:
+
+- Review period.
+- Engineering achievements.
+- Sales performance.
+- Customer feedback.
+- Financial summary.
+- Major problems.
+- Lessons learned.
+- Previous priority assessment.
+- New strategic priority.
+
+Allow PDF export and print.
+
+Save every completed review in the Review History section.
+
+---
+
+# 8. AUTOMATED WEEKLY CEO REPORT
+
+When a review is completed, generate an executive summary based on the actual information entered.
+
+The summary should answer:
+
+1. How did the business perform this week?
+2. What were the biggest achievements?
+3. What were the biggest weaknesses?
+4. What financial changes occurred?
+5. What customer issues require attention?
+6. What opportunities should the CEO pursue?
+7. What is the most important priority for next week?
+
+Implement an AI integration layer using a configurable API provider.
+
+Allow the CEO to configure an AI API key securely in Settings.
+
+The AI must analyze actual saved business data.
+
+Never fabricate:
+
+- Revenue.
+- Customer numbers.
+- Sales.
+- Expenses.
+- Product achievements.
+- Customer feedback.
+
+If information is missing, clearly state that it was not recorded.
+
+The application must still work without an AI API key. Provide a rule-based executive summary as a fallback.
+
+---
+
+# 9. REMINDERS AND NOTIFICATIONS
+
+Build a proper notification system.
+
+### Weekly review reminder
+
+Default schedule:
+
+Every Sunday at 6:00 PM, Africa/Accra.
+
+Notification:
+
+"Your WAGNOVATE weekly CEO review is due. Review your engineering progress, sales, customer feedback, finances, problems and lessons. Choose your single most important priority for next week."
+
+### Additional reminders
+
+Support:
+
+- Upcoming task deadlines.
+- Overdue tasks.
+- Customer follow-ups.
+- Unpaid invoices.
+- Critical unresolved problems.
+- Strategic priority deadlines.
+
+Provide:
+
+- In-app notifications.
+- Browser notifications.
+- PWA notifications where supported.
+- Configurable reminder settings.
+- Notification history.
+- Read/unread states.
+
+Request notification permissions properly.
+
+Do not assume browser notifications will work without user permission.
+
+Implement reliable scheduling through a server-side scheduled job or supported cron service. Do not depend on a browser tab remaining open.
+
+Prevent duplicate reminders.
+
+---
+
+# 10. TASK AND ACTION MANAGEMENT
+
+Create a task management module.
+
+Every task should contain:
+
+- Task title.
+- Description.
+- Department.
+- Priority.
+- Start date.
+- Due date.
+- Status.
+- Related project.
+- Related strategic priority.
+- Completion date.
+
+Allow:
+
+- Create.
+- Edit.
+- Delete with confirmation.
+- Mark complete.
+- Search.
+- Filter.
+- Sort.
+- Calendar view.
+- List view.
+
+Priorities:
+
+- Low.
+- Medium.
+- High.
+- Urgent.
+
+Provide an overdue task indicator.
+
+---
+
+# 11. PROJECT AND PRODUCT TRACKING
+
+Create a project management module.
+
+Initial product records:
+
+1. WAG SMS.
+2. WAG POS.
+3. Internal Business Projects.
+4. Client Projects.
+
+Allow new projects to be added.
+
+Every project should include:
+
+- Project name.
+- Description.
+- Customer.
+- Project category.
+- Start date.
+- Target completion date.
+- Current status.
+- Budget.
+- Amount received.
+- Outstanding balance.
+- Tasks.
+- Milestones.
+- Notes.
+
+Display project progress and financial status.
+
+Allow the CEO to connect engineering achievements, expenses, income and problems to their respective projects.
+
+---
+
+# 12. CUSTOMER AND CONTRACT MANAGEMENT
+
+Build a simple CRM module.
+
+Capture:
+
+- Customer/business name.
+- Contact details.
+- Location.
+- Product purchased.
+- Contract value.
+- Contract start date.
+- Contract end date.
+- Payment arrangement.
+- Amount paid.
+- Outstanding balance.
+- Contract status.
+- Customer notes.
+
+Allow uploading contracts and related documents.
+
+Provide a customer profile showing:
+
+- Contracts.
+- Payments.
+- Invoices.
+- Projects.
+- Feedback.
+- Support issues.
+
+Build a contract register and expiry reminders.
+
+---
+
+# 13. REPORTS AND BUSINESS ANALYTICS
+
+Create a dedicated reporting section.
+
+Reports should include:
+
+- Weekly CEO performance.
+- Monthly business performance.
+- Quarterly business performance.
+- Annual business performance.
+- Revenue and expense analysis.
+- Sales pipeline analysis.
+- Customer satisfaction.
+- Project delivery.
+- Priority completion.
+- Outstanding invoices.
+
+Allow selecting custom date ranges.
+
+All charts must use actual database records.
+
+Provide PDF and CSV export options.
+
+Create clean, professional printable reports with WAGNOVATE Technologies branding.
+
+---
+
+# 14. HISTORICAL PERFORMANCE AND COMPARISON
+
+The CEO must be able to compare performance over time.
+
+Allow comparisons such as:
+
+- This week versus last week.
+- This month versus last month.
+- This quarter versus last quarter.
+- This year versus last year.
+
+Compare:
+
+- Revenue.
+- Expenses.
+- Cash flow.
+- New customers.
+- Contracts secured.
+- Projects completed.
+- Customer satisfaction.
+- Problems resolved.
+- Strategic priorities achieved.
+
+Use percentage changes where mathematically valid.
+
+Handle zero-value and missing-data situations correctly. Never show misleading percentages.
+
+---
+
+# 15. SETTINGS AND PERSONALIZATION
+
+Create a complete Settings module.
+
+Include:
+
+### Company settings
+
+- Company name.
+- Company logo.
+- Website.
+- Contact information.
+- Currency.
+- Timezone.
+
+### CEO settings
+
+- Name.
+- Email.
+- Profile picture.
+- Password management.
+
+### Appearance
+
+- Light mode.
+- Dark mode.
+- System theme.
+
+### Notification settings
+
+- Weekly review day.
+- Weekly review time.
+- Reminder preferences.
+- Browser notification permissions.
+
+### Data settings
+
+- Export company data.
+- Backup database.
+- Restore from backup where safely supported.
+- Account security.
+
+### AI settings
+
+- AI provider.
+- API key.
+- Executive summary preferences.
+
+Never expose API keys in frontend code or browser storage.
+
+---
+
+# 16. AUTHENTICATION AND SECURITY
+
+This is a private executive application.
+
+Implement:
+
+- Secure login.
+- Secure password hashing.
+- Session management.
+- Logout.
+- Password reset.
+- Protected application routes.
+- Server-side authorization.
+- Input validation.
+- Rate limiting.
+- Secure file uploads.
+- Environment variable protection.
+- Database access controls.
+
+Initially, create a single-owner CEO account.
+
+Do not create a public registration page.
+
+Provide a secure first-time administrator setup process.
+
+Design the database so additional authorized staff accounts can be introduced later with role-based permissions.
+
+Never hardcode credentials.
+
+Never expose private business records through public API endpoints.
+
+---
+
+# 17. DATABASE DESIGN
+
+Create a properly normalized relational database.
+
+At minimum, include models for:
+
+- User.
+- Company.
+- CEOReview.
+- EngineeringAchievement.
+- SalesLead.
+- Contract.
+- Customer.
+- CustomerFeedback.
+- FinancialTransaction.
+- Invoice.
+- Project.
+- ProjectMilestone.
+- Task.
+- BusinessProblem.
+- LessonLearned.
+- StrategicPriority.
+- Notification.
+- UploadedDocument.
+- ApplicationSettings.
+
+Establish appropriate:
+
+- Primary keys.
+- Foreign keys.
+- Relationships.
+- Indexes.
+- Unique constraints.
+- Timestamps.
+- Validation rules.
+
+Use migrations and seed scripts.
+
+Ensure historical records remain available.
+
+Use soft deletion where historical financial and business records must be preserved.
+
+Implement database backup procedures.
+
+---
+
+# 18. PWA AND MOBILE/DESKTOP EXPERIENCE
+
+The application must be installable.
+
+Create:
+
+- Web app manifest.
+- Application icons.
+- Service worker.
+- Offline fallback.
+- Install prompt.
+- Responsive layouts.
+- Mobile-friendly forms.
+- Touch-friendly controls.
+
+The application must work on:
+
+- Android phones.
+- iPhones.
+- Windows laptops.
+- macOS computers.
+- Modern desktop browsers.
+
+Where internet connectivity is unavailable, provide a clear offline state.
+
+Do not falsely indicate that unsynchronized financial or business records have been saved to the server.
+
+If offline data entry is supported, implement a reliable local queue with synchronization, conflict handling and clear sync indicators.
+
+---
+
+# 19. USER EXPERIENCE DETAILS
+
+Use professional empty states.
+
+Examples:
+
+"No engineering achievements recorded this week."
+
+"No new contracts have been secured yet."
+
+"No outstanding customer complaints."
+
+"No financial transactions recorded for this period."
+
+Provide useful actions beside empty states.
+
+Every destructive action must have a confirmation dialog.
+
+All forms must provide validation and meaningful error messages.
+
+Use loading skeletons where appropriate.
+
+Provide success and failure feedback.
+
+Ensure keyboard accessibility.
+
+Use semantic HTML and accessible labels.
+
+Make all tables responsive.
+
+Avoid fake buttons, dead links and nonfunctional interface elements.
+
+---
+
+# 20. APPLICATION WORKFLOW
+
+The normal operating workflow should be:
+
+**Daily**
+1. Open the CEO dashboard.
+2. Review business performance.
+3. Record engineering achievements.
+4. Update sales opportunities.
+5. Record customer feedback.
+6. Record revenue and expenses.
+7. Resolve tasks and problems.
+
+**Every Sunday**
+1. Receive the weekly CEO review reminder.
+2. Open the seven-step review.
+3. Assess engineering and product development.
+4. Assess sales.
+5. Review customer feedback.
+6. Review finances.
+7. Identify problems.
+8. Record lessons learned.
+9. Assess the previous week's priority.
+10. Select ONE priority for the coming week.
+11. Complete the review.
+12. Generate and save the executive report.
+
+**At the end of each month**
+1. Review financial performance.
+2. Evaluate customer growth.
+3. Review contracts.
+4. Examine expenses.
+5. Evaluate business growth.
+6. Establish the following month's strategic objectives.
+
+---
+
+# 21. IMPORTANT BUSINESS INTELLIGENCE RULES
+
+The application must help the CEO make decisions, not simply display numbers.
+
+Implement intelligent warnings such as:
+
+- Expenses exceeding income.
+- Declining revenue.
+- Increasing outstanding invoices.
+- Unresolved critical problems.
+- Repeated customer complaints.
+- Overdue strategic priorities.
+- Low sales conversion.
+- Excessive project delays.
+
+Use actual recorded data to generate warnings.
+
+Do not generate an alert merely because a particular field is empty unless the application clearly labels it as missing information.
+
+Provide an explanation and recommended next action for each warning.
+
+---
+
+# 22. QUALITY ASSURANCE AND TESTING
+
+Before declaring the application complete, perform a complete functionality audit.
+
+Test:
+
+**Authentication**
+- Login.
+- Logout.
+- Protected routes.
+- Invalid credentials.
+
+**CEO reviews**
+- Create a review.
+- Save a draft.
+- Continue an incomplete review.
+- Complete a review.
+- View historical reviews.
+- Export reports.
+
+**Financial management**
+- Create income.
+- Create expenses.
+- Edit transactions.
+- Delete with appropriate safeguards.
+- Verify calculations.
+- Verify date filtering.
+
+**CRM**
+- Create customers.
+- Create sales opportunities.
+- Update pipeline stages.
+- Record feedback.
+- Track contracts and invoices.
+
+**Task management**
+- Create tasks.
+- Edit tasks.
+- Complete tasks.
+- Track overdue tasks.
+
+**Notifications**
+- Schedule reminders.
+- Prevent duplicates.
+- Verify timezone handling.
+- Test permission-denied states.
+
+**Responsive testing**
+- Small Android screens.
+- iPhone-sized screens.
+- Tablets.
+- Desktop screens.
+
+Fix all critical bugs before completion.
+
+Do not claim functionality has been tested if it has not actually been tested.
+
+---
+
+# 23. DEVELOPMENT AND DELIVERY INSTRUCTIONS
+
+Work systematically.
+
+PHASE 1 — Repository inspection and architecture.
+
+PHASE 2 — Database schema and backend implementation.
+
+PHASE 3 — Authentication and security.
+
+PHASE 4 — Application design system and navigation.
+
+PHASE 5 — Executive dashboard.
+
+PHASE 6 — Seven-step weekly CEO review.
+
+PHASE 7 — Engineering, sales and CRM modules.
+
+PHASE 8 — Finance and reporting.
+
+PHASE 9 — Projects, tasks and problem management.
+
+PHASE 10 — Notifications and automated reminders.
+
+PHASE 11 — AI executive summaries.
+
+PHASE 12 — PWA and responsive optimization.
+
+PHASE 13 — Testing, bug fixing and deployment preparation.
+
+Do not sacrifice core functionality to make the interface look impressive.
+
+Do not replace working features with placeholders.
+
+Do not leave critical modules as TODO comments.
+
+If a third-party service requires API credentials, create the integration correctly, document the required environment variables and provide a graceful fallback until credentials are supplied.
+
+Create:
+
+- README.md.
+- .env.example.
+- Database migrations.
+- Database seed scripts.
+- Deployment instructions.
+- Backup instructions.
+- Administrator setup instructions.
+
+---
+
+# 24. FINAL ACCEPTANCE CRITERIA
+
+The application is only considered complete when:
+
+1. The CEO can securely log in.
+2. The dashboard displays real business data.
+3. All seven weekly review sections work.
+4. Weekly reviews can be saved and revisited.
+5. Previous reviews are preserved.
+6. The CEO can track engineering achievements.
+7. The CEO can manage sales opportunities.
+8. The CEO can manage customers and feedback.
+9. The CEO can record and analyze revenue and expenses.
+10. The CEO can track problems and lessons.
+11. The CEO can select exactly one primary weekly priority.
+12. The system can remind the CEO every Sunday.
+13. Reports can be generated and exported.
+14. Historical performance can be compared.
+15. The application works on mobile and desktop.
+16. The application can be installed as a PWA.
+17. Database records persist after logout and login.
+18. Security and validation are implemented.
+19. The core functionality has been tested.
+20. Deployment instructions are complete.
+
+---
+
+# 25. FINAL PRODUCT VISION
+
+I want WAGNOVATE CEO DESK to become the central command centre for running WAGNOVATE Technologies.
+
+When I open the application, I should immediately understand:
+
+- What did we accomplish?
+- What did we build?
+- What did we sell?
+- How much money came in?
+- How much money went out?
+- Which customers need attention?
+- What problems are threatening progress?
+- What opportunities should we pursue?
+- Are we growing?
+- What is the single most important thing I must accomplish next?
+
+The system should help me transition from being primarily a software developer to becoming a strategic founder and CEO.
+
+It should help me build a business that can operate systematically, serve customers consistently, generate sustainable revenue and eventually grow beyond my personal involvement in every daily activity.
+
+**FINAL INSTRUCTION:**
+
+Start by inspecting the existing repository and reporting its architecture briefly. Then proceed with implementation.
+
+Make sensible engineering decisions without repeatedly asking me to approve ordinary technical details.
+
+Prioritize a working, secure, professional product over a superficial demonstration.
+
+Build the complete WAGNOVATE CEO DESK application.

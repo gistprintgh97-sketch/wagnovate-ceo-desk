@@ -1,0 +1,44 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens. RGB channels so Tailwind can apply opacity. */
+:root.dark, :root {
+  --bg: 5 10 22; --panel: 9 18 36; --panel2: 14 27 52; --line: 26 52 98;
+  --fg: 230 238 252; --muted: 127 147 181;
+  --accent: 59 130 246; --cyan: 34 211 238; --good: 34 197 94; --warn: 245 158 11; --bad: 239 68 68; --violet: 167 139 250;
+  --glow: 0.28; color-scheme: dark;
+}
+:root.light {
+  --bg: 242 245 251; --panel: 255 255 255; --panel2: 246 248 252; --line: 218 225 238;
+  --fg: 15 23 42; --muted: 100 116 139;
+  --accent: 37 99 235; --cyan: 8 145 178; --good: 22 163 74; --warn: 217 119 6; --bad: 220 38 38; --violet: 124 58 237;
+  --glow: 0; color-scheme: light;
+}
+html, body { background: rgb(var(--bg)); color: rgb(var(--fg)); font-family: "Inter Variable", system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+:root.dark body { background-image: radial-gradient(1200px 600px at 50% -10%, rgb(var(--accent) / 0.10), transparent 60%); background-attachment: fixed; }
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--line)) transparent; }
+:focus-visible { outline: 2px solid rgb(var(--cyan)); outline-offset: 2px; border-radius: 6px; }
+
+@layer components {
+  .panel { @apply rounded-panel border border-line bg-panel shadow-soft; }
+  :root.dark .panel { box-shadow: 0 0 0 1px rgb(var(--line) / .35), 0 0 28px -10px rgb(var(--accent) / .35); }
+  .panel-title { @apply flex items-center gap-2 text-[13px] font-semibold tracking-wide; }
+  .panel-title::before { content: ""; @apply inline-block h-3.5 w-[3px] rounded-full bg-accent; }
+  .eyebrow { @apply font-mono text-[10px] uppercase tracking-[0.14em] text-muted; }
+  .num { @apply font-mono tabular-nums; }
+  .field { @apply w-full rounded-lg border border-line bg-panel2 px-3 py-2 text-sm text-fg placeholder:text-muted/70 focus:border-accent focus:outline-none; }
+  .btn { @apply inline-flex min-h-[40px] items-center justify-center gap-2 rounded-lg border border-line bg-panel2 px-3.5 py-2 text-sm font-medium transition hover:border-accent/60 hover:bg-accent/10 disabled:pointer-events-none disabled:opacity-50; }
+  .btn-primary { @apply border-accent bg-accent text-white hover:bg-accent/85 hover:border-accent; }
+  .btn-danger { @apply border-bad/50 text-bad hover:bg-bad/10 hover:border-bad; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:bg-panel2; }
+}
+@media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+  .panel { box-shadow: none !important; border-color: #ccc !important; background: #fff !important; }
+  :root { --fg: 0 0 0; --muted: 80 80 80; --panel: 255 255 255; --panel2: 245 245 245; --line: 200 200 200; }
+}
