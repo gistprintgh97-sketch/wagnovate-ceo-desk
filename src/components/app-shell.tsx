@@ -23,7 +23,7 @@ function Brand({ company, collapsed, rail }: { company: { name: string; hasLogo:
         // eslint-disable-next-line @next/next/no-img-element
         ? <img src="/api/branding/logo" alt="" className="h-9 w-9 shrink-0 rounded-lg object-contain" />
         : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/50 bg-accent/15 text-sm font-bold text-accent">W</span>}
-      {!collapsed && <span className={cn("text-sm font-bold tracking-[0.14em]", rail && "hidden xl:inline")}>WAGNOVATE</span>}
+      {!collapsed && <span className={cn("whitespace-nowrap text-sm font-bold tracking-[0.14em]", rail && "opacity-0 transition-opacity duration-150 group-hover/side:opacity-100 group-focus-within/side:opacity-100")}>WAGNOVATE</span>}
     </Link>
   );
 }
@@ -39,30 +39,30 @@ export function AppShell({ children, company, user }: { children: ReactNode; com
 
   return (
     <div className="min-h-dvh">
-      {/* Desktop sidebar: full 240px with labels from 1280px up; icons-only rail (with tooltips) from 1024px. Content is padded so it never sits under it. */}
-      <aside className="no-print fixed inset-y-0 left-0 z-40 hidden w-[68px] flex-col overflow-hidden border-r border-line bg-panel lg:flex xl:w-[240px]" aria-label="Main navigation">
+      {/* Desktop sidebar: a slim 68px icon rail that slides open to 240px over the page on hover or keyboard focus, then closes itself. Content keeps a fixed 68px gutter, so nothing shifts or hides. */}
+      <aside className="group/side no-print fixed inset-y-0 left-0 z-40 hidden w-[68px] flex-col overflow-hidden border-r border-line bg-panel transition-[width,box-shadow] duration-200 ease-out hover:w-[240px] hover:shadow-[8px_0_32px_-8px_rgb(0_0_0/0.6)] focus-within:w-[240px] focus-within:shadow-[8px_0_32px_-8px_rgb(0_0_0/0.6)] motion-reduce:transition-none lg:flex" aria-label="Main navigation">
         <Brand company={company} rail />
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-2">
           {NAV.map((n) => {
             const on = active(pathname, n.href);
             return (
               <Link key={n.href} href={n.href} aria-current={on ? "page" : undefined} title={n.label}
-                className={cn("relative flex h-11 items-center justify-center gap-3 rounded-lg px-3 text-sm transition xl:justify-start", on ? "text-fg" : "text-muted hover:text-fg")}>
+                onClick={(e) => e.currentTarget.blur()} className={cn("relative flex h-11 items-center gap-3 rounded-lg px-3 text-sm transition", on ? "text-fg" : "text-muted hover:text-fg")}>
                 {on && <motion.span layoutId="nav-active" className="absolute inset-0 rounded-lg bg-accent/15 ring-1 ring-accent/40" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
                 <n.icon className={cn("relative h-[18px] w-[18px] shrink-0", on && "text-accent")} strokeWidth={1.75} />
-                <span className="relative hidden whitespace-nowrap xl:inline">{n.label}</span>
+                <span className="relative whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/side:opacity-100 group-focus-within/side:opacity-100">{n.label}</span>
               </Link>
             );
           })}
         </nav>
         <div className="border-t border-line p-2">
-          <button onClick={logout} className="flex h-11 w-full items-center justify-center gap-3 rounded-lg px-3 text-sm text-muted transition hover:bg-bad/10 hover:text-bad xl:justify-start" title="Sign out" aria-label="Sign out">
-            <LogOut className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} /><span className="hidden whitespace-nowrap xl:inline">Sign out · {user.name.split(" ")[0]}</span>
+          <button onClick={logout} className="flex h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted transition hover:bg-bad/10 hover:text-bad" title="Sign out" aria-label="Sign out">
+            <LogOut className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} /><span className="whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/side:opacity-100 group-focus-within/side:opacity-100">Sign out · {user.name.split(" ")[0]}</span>
           </button>
         </div>
       </aside>
 
-      <div className="lg:pl-[68px] xl:pl-[240px]">
+      <div className="lg:pl-[68px]">
         <header className="no-print sticky top-0 z-30 border-b border-line bg-bg/85 backdrop-blur">
           <div className="mx-auto flex max-w-[1760px] items-center gap-3 px-3 py-2 md:px-5">
             <div className="lg:hidden"><Brand company={company} collapsed /></div>
