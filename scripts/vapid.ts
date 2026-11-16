@@ -1,5 +1,6 @@
 // Generates the key pair that lets the server send push notifications to your phone and computer.
-import webpush from "web-push";
+import { webpush } from "../src/server/webpush";
+
 const k = webpush.generateVAPIDKeys();
 console.log("Copy these two lines into your .env file (local) or the Render dashboard (production):\n");
 console.log(`VAPID_PUBLIC_KEY="${k.publicKey}"`);

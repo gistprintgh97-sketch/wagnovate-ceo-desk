@@ -1,6 +1,6 @@
 // Server-side reminders (spec section 9). Runs on a schedule inside the server (node-cron) or from an external cron call,
 // so it never depends on a browser tab being open. Each reminder carries a unique key, so it can never be sent twice.
-import webpush from "web-push";
+import { webpush } from "./webpush";
 import { db } from "./db";
 import { getSettings } from "./settings";
 import { invoiceLedger } from "./ledger";
