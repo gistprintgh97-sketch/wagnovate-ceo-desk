@@ -181,7 +181,7 @@ export function Globe({ hub, customers, unplotted, selectedId, onSelect }: { hub
 
   return (
     <div>
-      <div ref={wrap} className="relative aspect-[4/3] w-full min-h-[260px] touch-pan-y sm:aspect-[16/10] xl:aspect-[16/11]">
+      <div ref={wrap} className="relative h-[250px] w-full touch-pan-y sm:h-[290px] xl:h-[300px]">
         <canvas ref={cv} role="img" aria-label={`Globe showing ${customers.length} customer locations connected to ${hub.name}. Drag to rotate, click a marker for details.`}
           className="absolute inset-0 cursor-grab touch-none active:cursor-grabbing" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={() => { st.current.drag = false; }}
           onPointerEnter={() => { st.current.hover = true; }} onPointerLeave={() => { st.current.hover = false; }} />
@@ -204,7 +204,7 @@ export function Globe({ hub, customers, unplotted, selectedId, onSelect }: { hub
         <span className="ml-auto hidden sm:inline">Drag to rotate · click a marker to drill down</span>
       </div>
       {customers.length > 0 && (
-        <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Customer locations">
+        <ul className="mt-2 flex max-h-[26px] flex-wrap gap-1.5 overflow-hidden transition-[max-height] duration-200 hover:max-h-40 focus-within:max-h-40" aria-label="Customer locations">
           {customers.slice(0, 12).map((cu) => (
             <li key={cu.id}><button onClick={() => focusOn(cu)} className={`rounded-md border px-2 py-1 text-[11px] transition ${selected?.id === cu.id ? "border-accent bg-accent/15" : "border-line text-muted hover:text-fg"}`}>{cu.name} · {cu.place}</button></li>
           ))}

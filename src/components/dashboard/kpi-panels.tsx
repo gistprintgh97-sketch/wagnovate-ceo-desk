@@ -77,10 +77,10 @@ export function DonutPanel({ d }: { d: Dashboard }) {
   const total = d.revenueTotal || 1; const p = moneyParts(d.revenueTotal);
   return (
     <div className="flex items-center gap-3">
-      <div className="relative h-[130px] w-[130px] shrink-0">
+      <div className="relative h-[112px] w-[112px] shrink-0">
         <ResponsiveContainer>
           <PieChart>
-            <Pie data={data} dataKey="amount" nameKey="label" innerRadius={42} outerRadius={60} paddingAngle={2} stroke="none" startAngle={90} endAngle={-270} isAnimationActive={!reduced} animationDuration={900}>
+            <Pie data={data} dataKey="amount" nameKey="label" innerRadius={36} outerRadius={52} paddingAngle={2} stroke="none" startAngle={90} endAngle={-270} isAnimationActive={!reduced} animationDuration={900}>
               {data.map((_, i) => <Cell key={i} fill={c[DONUT[i % DONUT.length]]} />)}
             </Pie>
             <Tooltip content={({ active, payload }) => active && payload?.[0] ? <div className="rounded-lg border border-line bg-panel px-2 py-1 text-xs shadow-soft">{payload[0].name}: <b className="num">{ghs(payload[0].value as number)}</b></div> : null} />

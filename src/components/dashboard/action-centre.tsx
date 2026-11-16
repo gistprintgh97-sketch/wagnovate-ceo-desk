@@ -23,14 +23,14 @@ export function PriorityAndReview({ a }: { a: Action }) {
   const p = a.priority;
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
-      <Link href="/priorities" className="panel group flex gap-3 p-4 transition hover:border-accent/60">
+      <Link href="/priorities" className="panel group flex gap-3 p-3 transition hover:border-accent/60">
         <Flag className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
         <div className="min-w-0 flex-1">
           <p className="eyebrow">Current strategic priority</p>
           {p ? (
             <>
               <p className="mt-0.5 text-base font-semibold leading-snug">{p.title}</p>
-              <p className="mt-1 line-clamp-2 text-xs text-muted">{p.objective}</p>
+              <p className="mt-0.5 line-clamp-1 text-xs text-muted">{p.objective}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                 <Badge tone="violet">{label(p.category)}</Badge><Badge tone={statusTone(p.status)}>{label(p.status)}</Badge>
                 <span className={cn("num", p.overdue ? "text-bad" : "text-muted")}>{p.overdue ? "Overdue · " : "Due "}{fmtDate(p.deadline)}</span>
@@ -40,13 +40,12 @@ export function PriorityAndReview({ a }: { a: Action }) {
         </div>
         <ArrowUpRight className="h-4 w-4 text-muted transition group-hover:text-accent" />
       </Link>
-      <Link href={a.review.draftId ? `/review/${a.review.draftId}` : "/review"} className={cn("panel group flex gap-3 p-4 transition hover:border-accent/60", a.review.overdue && "border-warn/60")}>
+      <Link href={a.review.draftId ? `/review/${a.review.draftId}` : "/review"} className={cn("panel group flex gap-3 p-3 transition hover:border-accent/60", a.review.overdue && "border-warn/60")}>
         <ClipboardCheck className={cn("mt-0.5 h-5 w-5 shrink-0", a.review.overdue ? "text-warn" : "text-accent")} />
         <div className="min-w-0 flex-1">
           <p className="eyebrow">Next weekly CEO review</p>
           <p className="mt-0.5 text-base font-semibold">{when.format(new Date(a.review.at))}</p>
           <p className={cn("text-xs", a.review.overdue ? "text-warn" : "text-muted")}>{a.review.overdue ? `Due ${relative(a.review.at)}. ` : `${relative(a.review.at)}. `}{a.review.draftId ? "A draft is waiting." : ""}</p>
-          <p className="mt-1 text-[11px] text-muted">{a.review.schedule}</p>
         </div>
         <ArrowUpRight className="h-4 w-4 text-muted transition group-hover:text-accent" />
       </Link>
