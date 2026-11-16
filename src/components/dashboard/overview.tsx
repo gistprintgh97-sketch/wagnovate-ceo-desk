@@ -27,7 +27,7 @@ function greeting(): string {
 
 function LoadingState() {
   return (
-    <div className="grid grid-cols-1 gap-3 xl:grid-cols-[300px_minmax(0,1fr)_330px]" aria-busy="true" aria-label="Loading dashboard">
+    <div className="grid grid-cols-1 gap-3 2xl:grid-cols-[300px_minmax(0,1fr)_330px]" aria-busy="true" aria-label="Loading dashboard">
       <div className="space-y-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-52 rounded-panel" />)}</div>
       <div className="space-y-3"><div className="grid grid-cols-2 gap-3 md:grid-cols-5">{[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 rounded-panel" />)}</div><Skeleton className="h-[420px] rounded-panel" /><Skeleton className="h-52 rounded-panel" /></div>
       <div className="space-y-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-56 rounded-panel" />)}</div>
@@ -87,17 +87,17 @@ export function Overview() {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[300px_minmax(0,1fr)_330px]">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-[300px_minmax(0,1fr)_330px]">
         {/* LEFT */}
         <AnimatePresence mode="wait" initial={false}>
         {scope && sp ? (
-        <motion.div key={`l-${scope.id}`} {...swap} className="flex flex-col gap-3 xl:order-1">
+        <motion.div key={`l-${scope.id}`} {...swap} className="flex flex-col gap-3 2xl:order-1">
           <Panel title={`Contract Progress · ${scope.name}`}><ScopedContracts p={sp} /></Panel>
           <Panel title="Projects"><ScopedList empty="No projects for this customer." rows={sp.projects.map((x: any) => ({ id: x.id, a: x.name, b: x.status }))} /></Panel>
           <Panel title="Feedback"><ScopedList empty="No feedback recorded." rows={sp.feedback.slice(0, 6).map((x: any) => ({ id: x.id, a: x.comments, b: x.category }))} /></Panel>
         </motion.div>
         ) : (
-        <motion.div key="l-all" {...swap} className="flex flex-col gap-3 xl:order-1">
+        <motion.div key="l-all" {...swap} className="flex flex-col gap-3 2xl:order-1">
           <Panel title="Achievement vs Target" right={<>Red line 90%</>}><AchievementPanel d={d} /></Panel>
           <Panel title="Revenue by Product"><DonutPanel d={d} /></Panel>
           <Panel title="Project Delivery Days" right={<span className="text-bad">┆ target</span>}><DeliveryPanel d={d} /></Panel>
@@ -106,25 +106,20 @@ export function Overview() {
         </AnimatePresence>
 
         {/* CENTER */}
-        <div className="flex min-w-0 flex-col gap-3 md:order-first md:col-span-2 xl:order-2 xl:col-span-1">
+        <div className="flex min-w-0 flex-col gap-3 md:order-first md:col-span-2 2xl:order-2 2xl:col-span-1">
           <AnimatePresence mode="wait" initial={false}>
           {scope && sp ? (
-            <motion.div key={`k-${scope.id}`} {...swap} className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-3">{scopedKpis(sp)}</motion.div>
+            <motion.div key={`k-${scope.id}`} {...swap} className="grid grid-cols-2 gap-2 sm:grid-cols-4">{scopedKpis(sp)}</motion.div>
           ) : (
-          <motion.div key="k-all" {...swap} className="flex flex-col gap-3">
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-3">
-            <KpiCard label="Total Revenue" value={moneyParts(k.revenue.value).text} unit={moneyParts(k.revenue.value).unit} delta={k.revenue} href="/finance?tab=transactions" />
-            <KpiCard label="Total Expenses" value={moneyParts(k.expenses.value).text} unit={moneyParts(k.expenses.value).unit} delta={k.expenses} goodWhen="down" href="/finance?tab=transactions" />
-            <KpiCard label="Net Operating Cash Flow" value={moneyParts(k.netCashFlow.value).text} unit={moneyParts(k.netCashFlow.value).unit} delta={k.netCashFlow} href="/finance" />
-            <KpiCard label="Collection Rate" value={k.collectionRate.value === null ? "—" : k.collectionRate.value.toFixed(1)} unit={k.collectionRate.value === null ? "" : "%"} delta={k.collectionRate} sub="No invoices issued" href="/finance?tab=invoices" />
+          <motion.div key="k-all" {...swap} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <KpiCard label="Revenue" value={moneyParts(k.revenue.value).text} unit={moneyParts(k.revenue.value).unit} delta={k.revenue} href="/finance?tab=transactions" />
+            <KpiCard label="Expenses" value={moneyParts(k.expenses.value).text} unit={moneyParts(k.expenses.value).unit} delta={k.expenses} goodWhen="down" href="/finance?tab=transactions" />
+            <KpiCard label="Net Cash Flow" value={moneyParts(k.netCashFlow.value).text} unit={moneyParts(k.netCashFlow.value).unit} delta={k.netCashFlow} href="/finance" />
+            <KpiCard label="Collection Rate" value={k.collectionRate.value === null ? "—" : k.collectionRate.value.toFixed(1)} unit={k.collectionRate.value === null ? "" : "%"} delta={k.collectionRate} href="/finance?tab=invoices" />
             <KpiCard label="Active Customers" value={String(k.activeCustomers.value ?? 0)} delta={k.activeCustomers} href="/customers" />
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <KpiCard small label="New Contracts" value={String(k.newContracts.value ?? 0)} delta={k.newContracts} href="/sales?tab=contracts" />
-            <KpiCard small label="Outstanding Invoices" value={moneyParts(k.outstandingInvoices.value).text} unit={moneyParts(k.outstandingInvoices.value).unit} sub={`${k.outstandingInvoices.count} unpaid${k.outstandingInvoices.overdueCount ? ` · ${k.outstandingInvoices.overdueCount} overdue` : ""}`} href="/finance?tab=invoices&state=outstanding" />
-            <KpiCard small label="Active Projects" value={String(k.activeProjects.value ?? 0)} sub="Currently in progress" href="/engineering?tab=projects" />
-            <KpiCard small label="Completed Projects" value={String(k.completedProjects.value ?? 0)} delta={k.completedProjects} href="/engineering?tab=projects" />
-          </div>
+            <KpiCard label="New Contracts" value={String(k.newContracts.value ?? 0)} delta={k.newContracts} href="/sales?tab=contracts" />
+            <KpiCard label="Outstanding" value={moneyParts(k.outstandingInvoices.value).text} unit={moneyParts(k.outstandingInvoices.value).unit} sub={`${k.outstandingInvoices.count} unpaid${k.outstandingInvoices.overdueCount ? ` · ${k.outstandingInvoices.overdueCount} overdue` : ""}`} href="/finance?tab=invoices&state=outstanding" />
+            <KpiCard label="Active Projects" value={String(k.activeProjects.value ?? 0)} sub={`${k.completedProjects.value ?? 0} completed`} href="/engineering?tab=projects" />
           </motion.div>
           )}
           </AnimatePresence>
@@ -140,7 +135,7 @@ export function Overview() {
         </div>
 
         {/* RIGHT */}
-        <div className="flex flex-col gap-3 xl:order-3">
+        <div className="flex flex-col gap-3 2xl:order-3">
           <AnimatePresence mode="wait" initial={false}>
           {scope && sp ? (
             <motion.div key={`r-${scope.id}`} {...swap}><Panel title={`Invoices · ${scope.name}`}><ScopedInvoices p={sp} /></Panel></motion.div>

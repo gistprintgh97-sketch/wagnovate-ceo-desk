@@ -36,10 +36,10 @@ export function DeltaBadge({ d, goodWhen = "up", suffix = "YoY" }: { d: Delta; g
 
 export function KpiCard({ label, value, unit, delta, goodWhen, href, sub, small }: { label: string; value: string; unit?: string; delta?: Delta; goodWhen?: "up" | "down"; href?: string; sub?: string; small?: boolean }) {
   const body = (
-    <motion.div whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400, damping: 25 }} className={cn("panel h-full px-3 py-2.5 transition-shadow hover:border-accent/50", small && "py-2")}>
-      <p className="eyebrow truncate">{label}</p>
-      <p className="mt-1 flex items-baseline gap-1 whitespace-nowrap"><span className={cn("num font-semibold leading-none", small ? "text-xl" : "text-[22px]")}>{value}</span>{unit && <span className="num text-[10px] text-muted">{unit}</span>}</p>
-      <div className="mt-1.5 min-h-4">{delta ? <DeltaBadge d={delta} goodWhen={goodWhen} /> : sub ? <span className="text-[11px] text-muted">{sub}</span> : null}</div>
+    <motion.div whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400, damping: 25 }} className={cn("panel flex h-full min-h-[92px] flex-col justify-between p-3 transition-shadow hover:border-accent/50", small && "min-h-[80px]")}>
+      <p className="eyebrow text-[10px] leading-tight">{label}</p>
+      <p className="mt-1 flex flex-wrap items-baseline gap-x-1"><span className="num text-[22px] font-semibold leading-none">{value}</span>{unit && <span className="num text-[10px] text-muted">{unit}</span>}</p>
+      <div className="mt-1 min-h-[14px] text-[11px] leading-tight">{delta ? <DeltaBadge d={delta} goodWhen={goodWhen} /> : sub ? <span className="text-muted">{sub}</span> : null}</div>
     </motion.div>
   );
   return href ? <Link href={href} className="block rounded-panel">{body}</Link> : body;

@@ -16,21 +16,21 @@ import { InstallPrompt } from "./install-prompt";
 
 function active(pathname: string, href: string) { return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/"); }
 
-function Brand({ company, collapsed }: { company: { name: string; hasLogo: boolean }; collapsed?: boolean }) {
+function Brand({ company, collapsed, rail }: { company: { name: string; hasLogo: boolean }; collapsed?: boolean; rail?: boolean }) {
   return (
     <Link href="/" className="flex h-12 items-center gap-3 px-[14px]" aria-label="WAGNOVATE CEO Desk home">
       {company.hasLogo
         // eslint-disable-next-line @next/next/no-img-element
         ? <img src="/api/branding/logo" alt="" className="h-9 w-9 shrink-0 rounded-lg object-contain" />
         : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/50 bg-accent/15 text-sm font-bold text-accent">W</span>}
-      {!collapsed && <span className="text-sm font-bold tracking-[0.14em]">WAGNOVATE</span>}
+      {!collapsed && <span className={cn("text-sm font-bold tracking-[0.14em]", rail && "hidden xl:inline")}>WAGNOVATE</span>}
     </Link>
   );
 }
 
 export function AppShell({ children, company, user }: { children: ReactNode; company: { name: string; hasLogo: boolean }; user: { name: string; email: string } }) {
   const pathname = usePathname(); const router = useRouter();
-  const [hover, setHover] = useState(false); const [more, setMore] = useState(false);
+  const [more, setMore] = useState(false);
   const online = useOnline();
   const mobileItems = NAV.filter((n) => n.mobile); const rest = NAV.filter((n) => !n.mobile);
   const current = NAV.find((n) => active(pathname, n.href));
@@ -39,32 +39,30 @@ export function AppShell({ children, company, user }: { children: ReactNode; com
 
   return (
     <div className="min-h-dvh">
-      {/* Desktop rail: icons by default, expands on hover or keyboard focus */}
-      <motion.aside onHoverStart={() => setHover(true)} onHoverEnd={() => setHover(false)} onFocusCapture={() => setHover(true)} onBlurCapture={() => setHover(false)}
-        animate={{ width: hover ? 236 : 68 }} transition={{ type: "spring", stiffness: 420, damping: 38 }}
-        className="no-print fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden border-r border-line bg-panel lg:flex" aria-label="Main navigation">
-        <Brand company={company} collapsed={!hover} />
+      {/* Desktop sidebar: full 240px with labels from 1280px up; icons-only rail (with tooltips) from 1024px. Content is padded so it never sits under it. */}
+      <aside className="no-print fixed inset-y-0 left-0 z-40 hidden w-[68px] flex-col overflow-hidden border-r border-line bg-panel lg:flex xl:w-[240px]" aria-label="Main navigation">
+        <Brand company={company} rail />
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-2">
           {NAV.map((n) => {
             const on = active(pathname, n.href);
             return (
               <Link key={n.href} href={n.href} aria-current={on ? "page" : undefined} title={n.label}
-                className={cn("relative flex h-11 items-center gap-3 rounded-lg px-3 text-sm transition", on ? "text-fg" : "text-muted hover:text-fg")}>
+                className={cn("relative flex h-11 items-center justify-center gap-3 rounded-lg px-3 text-sm transition xl:justify-start", on ? "text-fg" : "text-muted hover:text-fg")}>
                 {on && <motion.span layoutId="nav-active" className="absolute inset-0 rounded-lg bg-accent/15 ring-1 ring-accent/40" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
                 <n.icon className={cn("relative h-[18px] w-[18px] shrink-0", on && "text-accent")} strokeWidth={1.75} />
-                <span className="relative whitespace-nowrap">{n.label}</span>
+                <span className="relative hidden whitespace-nowrap xl:inline">{n.label}</span>
               </Link>
             );
           })}
         </nav>
         <div className="border-t border-line p-2">
-          <button onClick={logout} className="flex h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted transition hover:bg-bad/10 hover:text-bad" title="Sign out">
-            <LogOut className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} /><span className="whitespace-nowrap">Sign out · {user.name.split(" ")[0]}</span>
+          <button onClick={logout} className="flex h-11 w-full items-center justify-center gap-3 rounded-lg px-3 text-sm text-muted transition hover:bg-bad/10 hover:text-bad xl:justify-start" title="Sign out" aria-label="Sign out">
+            <LogOut className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} /><span className="hidden whitespace-nowrap xl:inline">Sign out · {user.name.split(" ")[0]}</span>
           </button>
         </div>
-      </motion.aside>
+      </aside>
 
-      <div className="lg:pl-[68px]">
+      <div className="lg:pl-[68px] xl:pl-[240px]">
         <header className="no-print sticky top-0 z-30 border-b border-line bg-bg/85 backdrop-blur">
           <div className="mx-auto flex max-w-[1760px] items-center gap-3 px-3 py-2 md:px-5">
             <div className="lg:hidden"><Brand company={company} collapsed /></div>

@@ -18,8 +18,7 @@ export function scopedKpis(p: any) {
       <KpiCard label="Paid to date" value={moneyParts(p.totals.paid).text} unit={moneyParts(p.totals.paid).unit} sub="All recorded payments" />
       <KpiCard label="Outstanding" value={moneyParts(p.totals.outstanding).text} unit={moneyParts(p.totals.outstanding).unit} sub={p.totals.outstanding > 0 ? "Awaiting payment" : "Nothing owed"} />
       <KpiCard label="Active contracts" value={moneyParts(p.totals.contractValue).text} unit={moneyParts(p.totals.contractValue).unit} sub={`${p.contracts.filter((c: any) => c.status === "ACTIVE").length} active`} />
-      <KpiCard label="Satisfaction" value={avg ?? "—"} unit={avg ? "/ 5" : ""} sub={avg ? `${rated.length} rating(s)` : "No ratings recorded"} />
-      <KpiCard label="Open issues" value={String(open)} sub={open ? "Needs follow-up" : "None open"} href={`/customers?customer=${p.customer.id}`} />
+      <KpiCard label="Satisfaction" value={avg ?? "—"} unit={avg ? "/ 5" : ""} sub={`${avg ? `${rated.length} rating(s)` : "No ratings"} · ${open} open issue${open === 1 ? "" : "s"}`} href={`/customers?customer=${p.customer.id}`} />
     </>
   );
 }
