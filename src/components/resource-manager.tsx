@@ -48,7 +48,7 @@ function FieldInput({ f, form, def }: { f: Field; form: any; def: ResourceDef })
   );
 }
 
-export function RecordForm({ def, item, defaults, onDone, onCancel }: { def: ResourceDef; item?: any; defaults?: Record<string, any>; onDone: (saved: any) => void; onCancel: () => void }) {
+export function RecordForm({ def, item, defaults, onDone, onCancel, hide }: { def: ResourceDef; item?: any; defaults?: Record<string, any>; onDone: (saved: any) => void; onCancel: () => void; hide?: string[] }) {
   const qc = useQueryClient(); const toast = useToast();
   const schema = useMemo(() => buildSchema(def), [def]);
   const initial = useMemo(() => {
@@ -68,7 +68,7 @@ export function RecordForm({ def, item, defaults, onDone, onCancel }: { def: Res
   });
   return (
     <form onSubmit={form.handleSubmit((v) => { setServerErr(null); save.mutate(v); })} noValidate>
-      <div className="grid gap-3 sm:grid-cols-2">{def.fields.filter((f) => !f.hidden).map((f) => <FieldInput key={f.key} f={f} form={form} def={def} />)}</div>
+      <div className="grid gap-3 sm:grid-cols-2">{def.fields.filter((f) => !f.hidden && !hide?.includes(f.key)).map((f) => <FieldInput key={f.key} f={f} form={form} def={def} />)}</div>
       {serverErr && <p role="alert" className="mt-3 rounded-lg border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">{serverErr}</p>}
       <div className="mt-4 flex justify-end gap-2">
         <Button type="button" onClick={onCancel}>Cancel</Button>
