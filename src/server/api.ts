@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ZodError, type ZodTypeAny, type z } from "zod";
 import { Prisma } from "@prisma/client";
 import { getUser } from "./auth";
+import { ipFromHeaders } from "./ip";
 import { rateLimit } from "./rate-limit";
 
 export class AppError extends Error { constructor(public status: number, message: string) { super(message); } }
@@ -19,11 +20,24 @@ function friendly(e: ZodError): string {
   return e.issues.map((i) => (i.path.length ? `${i.path.join(".")}: ` : "") + i.message).join("; ");
 }
 
+/**
+ * CSRF defence for every state-changing request.
+ * Production: only the exact public address (APP_URL, e.g. https://ceo.wagnovate.com) is accepted.
+ * Development: the request must come from the same host it is sent to.
+ */
 function sameOrigin(req: NextRequest): boolean {
   if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return true;
-  const origin = req.headers.get("origin"); if (!origin) return true; // non-browser clients carry no cookie
-  const host = req.headers.get("host");
-  try { return new URL(origin).host === host; } catch { return false; }
+  const origin = req.headers.get("origin");
+  const site = req.headers.get("sec-fetch-site"); // set by every modern browser, cannot be forged by page scripts
+  if (site && site !== "same-origin" && site !== "none") return false;
+  if (process.env.NODE_ENV === "production") {
+    let allowed = "";
+    try { allowed = new URL(process.env.APP_URL ?? "").origin; } catch { return false; }
+    if (origin) return origin === allowed;
+    return site === "same-origin" || site === "none"; // no Origin header: accept only if the browser says it is same-origin
+  }
+  if (!origin) return true;
+  try { return new URL(origin).host === req.headers.get("host"); } catch { return false; }
 }
 
 type Ctx = { params: Promise<Record<string, string>> };
@@ -40,7 +54,7 @@ export function route<S extends ZodTypeAny | undefined = undefined>(opts: { body
       const user = opts.public ? (await getUser()) : await getUser();
       if (!opts.public && !user) throw new AppError(401, "Please sign in again.");
       if (opts.limit) {
-        const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ?? "local";
+        const ip = ipFromHeaders((n) => req.headers.get(n));
         const r = rateLimit(`${opts.limit.key}:${ip}`, opts.limit.max, opts.limit.windowMs);
         if (!r.ok) throw new AppError(429, `Too many attempts. Try again in ${r.retryAfterSec} seconds.`);
       }
@@ -59,7 +73,9 @@ export function route<S extends ZodTypeAny | undefined = undefined>(opts: { body
         if (e.code === "P2025") return json({ error: "That record no longer exists." }, 404);
         if (e.code === "P2003") return json({ error: "That record is linked to others and cannot be changed this way." }, 409);
       }
-      console.error("[api]", e);
+      // Log what happened, never the request body, cookies, headers or full error objects (they can contain secrets or personal data).
+      const err = e as { name?: string; code?: string; message?: string };
+      console.error(`[api] ${req.method} ${req.nextUrl.pathname} failed: ${err.name ?? "Error"}${err.code ? ` ${err.code}` : ""}: ${String(err.message ?? "").split("\n")[0].slice(0, 160)}`);
       return json({ error: "Something went wrong on the server. Nothing was saved." }, 500);
     }
   };

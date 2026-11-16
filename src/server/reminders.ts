@@ -12,7 +12,10 @@ const LOCK_ID = 727_001;
 let vapidReady = false;
 export function pushConfigured(): boolean {
   if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return false;
-  if (!vapidReady) { webpush.setVapidDetails(process.env.VAPID_SUBJECT ?? "mailto:ceo@wagnovate.com", process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY); vapidReady = true; }
+  if (!vapidReady) {
+    try { webpush.setVapidDetails(process.env.VAPID_SUBJECT ?? "mailto:ceo@wagnovate.com", process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY); vapidReady = true; }
+    catch { console.warn("[push] VAPID keys are not valid, so background push is switched off. Generate a pair with: pnpm vapid"); return false; }
+  }
   return true;
 }
 

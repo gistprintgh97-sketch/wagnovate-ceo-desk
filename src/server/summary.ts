@@ -14,6 +14,9 @@ export type Facts = {
   next: { title: string; category: string; objective: string; expectedResult: string; firstAction: string; deadline: string; successMeasure: string } | null;
 };
 
+/** AI_API_KEY from the environment. Blank or a placeholder such as "none" counts as not set. */
+export const envAiKey = (): string | undefined => { const k = process.env.AI_API_KEY?.trim(); return k && !["none", "n/a", "-"].includes(k.toLowerCase()) ? k : undefined; };
+
 const QUESTIONS = [
   "How did the business perform this week?",
   "What were the biggest achievements?",
@@ -94,8 +97,9 @@ ${QUESTIONS.map((q, i) => `${i + 1}. ${q}`).join("\n")}
 Write for a busy founder: plain words, short bullets where useful, name customers and amounts exactly as given.`;
 
 export async function aiSummary(f: Facts, s: Awaited<ReturnType<typeof getSettings>>): Promise<string> {
-  if (!s.aiKeyEnc || s.aiProvider === "none") throw new Error("AI is not configured");
-  const key = decrypt(s.aiKeyEnc);
+  // The key saved in Settings (encrypted) wins; otherwise fall back to the AI_API_KEY environment variable.
+  const key = s.aiKeyEnc ? decrypt(s.aiKeyEnc) : envAiKey();
+  if (!key || s.aiProvider === "none") throw new Error("AI is not configured");
   const payload = JSON.stringify({ week: f.context.week, facts: f.context, ceoNotes: f.narrative, lastWeekPriority: f.prior, nextWeekPriority: f.next });
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 45_000);
   try {
@@ -125,7 +129,7 @@ export async function aiSummary(f: Facts, s: Awaited<ReturnType<typeof getSettin
 }
 
 export async function generateSummary(f: Facts, s: Awaited<ReturnType<typeof getSettings>>): Promise<{ text: string; source: "AI" | "RULES"; note?: string }> {
-  if (s.aiAutoSummary && s.aiProvider !== "none" && s.aiKeyEnc) {
+  if (s.aiAutoSummary && s.aiProvider !== "none" && (s.aiKeyEnc || envAiKey())) {
     try { return { text: await aiSummary(f, s), source: "AI" }; }
     catch (e) { console.error("[ai-summary]", (e as Error).message); return { text: ruleSummary(f), source: "RULES", note: "The AI service could not be reached, so the rule-based summary was used." }; }
   }

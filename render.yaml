@@ -1,0 +1,91 @@
+# Render Blueprint for WAGNOVATE CEO DESK  (https://ceo.wagnovate.com)
+#
+# Creates: 1 web service + 1 persistent disk, 1 managed PostgreSQL database, 1 cron job for reminders.
+# Secrets are NOT stored here. Every "sync: false" value is typed into the Render dashboard (see DEPLOY.md).
+
+databases:
+  - name: ceo-desk-db
+    plan: basic-256mb          # paid plan (the free database expires). Upgrade later if you need more space.
+    region: frankfurt
+    databaseName: ceo_desk
+    user: ceo_desk
+    postgresMajorVersion: "16"
+    ipAllowList: []            # no outside access: only your Render services can reach the database
+
+services:
+  # ───────────────────────── the app ─────────────────────────
+  - type: web
+    name: wagnovate-ceo-desk
+    runtime: node
+    plan: starter
+    region: frankfurt
+    branch: main
+    # --prod=false keeps the build tools (TypeScript, Tailwind, Prisma CLI) that the build needs.
+    buildCommand: pnpm install --frozen-lockfile --prod=false && pnpm prisma generate && pnpm build
+    # Applies any new database migrations (additive only), then starts the app. Seed data is NOT run in production.
+    startCommand: pnpm prisma migrate deploy && pnpm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    # Render's normal file system is erased on every deploy. Uploads (logo, receipts, contracts) live on this disk.
+    disk:
+      name: ceo-desk-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      # ---- fixed settings ----
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: TZ
+        value: Africa/Accra
+      - key: APP_URL
+        value: https://ceo.wagnovate.com
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: BACKUP_DIR
+        value: /var/data/backups
+      - key: TRUST_PROXY_HOPS      # Render's load balancer is the one trusted proxy in front of the app
+        value: "1"
+      - key: DISABLE_INTERNAL_SCHEDULER   # reminders are triggered by the cron job below instead
+        value: "true"
+      # ---- database (wired automatically) ----
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ceo-desk-db
+          property: connectionString
+      # ---- secrets: you type these in the Render dashboard ----
+      - key: AUTH_SECRET          # 32+ random characters (signs/peppers login sessions)
+        sync: false
+      - key: SETUP_TOKEN          # one-time password for creating the CEO account at /setup
+        sync: false
+      - key: CRON_SECRET          # shared secret between the cron job and the app
+        sync: false
+      - key: ENCRYPTION_KEY       # 64 hex characters (encrypts your saved AI key)
+        sync: false
+      - key: VAPID_PUBLIC_KEY     # push notifications (generate with: pnpm vapid)
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: AI_API_KEY           # OPTIONAL. Type "none" if you do not use AI (you can also set the key later in Settings)
+        sync: false
+
+  # ───────────────────── reminder trigger ─────────────────────
+  # Every 5 minutes this calls the app. The app de-duplicates: each reminder has a unique key and a database lock,
+  # so calling it more often (or twice at once) can never send the same reminder twice.
+  - type: cron
+    name: ceo-desk-reminders
+    runtime: node
+    plan: starter
+    region: frankfurt
+    schedule: "*/5 * * * *"
+    buildCommand: echo "nothing to build"
+    startCommand: curl -fsS --max-time 60 -X POST -H "x-cron-secret:$CRON_SECRET" "$APP_URL/api/cron/reminders"
+    envVars:
+      - key: APP_URL
+        value: https://ceo.wagnovate.com
+      - key: CRON_SECRET          # copied from the web service, so you only enter it once
+        fromService:
+          type: web
+          name: wagnovate-ceo-desk
+          envVarKey: CRON_SECRET

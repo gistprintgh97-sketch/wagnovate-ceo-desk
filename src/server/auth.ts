@@ -2,7 +2,8 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { hash, verify } from "@node-rs/argon2";
 import { db } from "./db";
-import { randomToken, sha256 } from "./crypto";
+import { randomToken, sessionHash } from "./crypto";
+import { ipFromHeaders } from "./ip";
 
 export const COOKIE = "ceo_session";
 const SESSION_DAYS = 14;
@@ -18,25 +19,26 @@ export function passwordProblem(p: string): string | null {
 
 export async function clientIp(): Promise<string> {
   const h = await headers();
-  return (h.get("x-forwarded-for")?.split(",")[0] ?? h.get("x-real-ip") ?? "local").trim();
+  return ipFromHeaders((n) => h.get(n));
 }
 
 export async function createSession(userId: string) {
   const token = randomToken(32);
   const h = await headers();
-  await db.session.create({ data: { userId, tokenHash: sha256(token), expiresAt: new Date(Date.now() + SESSION_DAYS * 864e5), userAgent: h.get("user-agent")?.slice(0, 200), ip: await clientIp() } });
-  (await cookies()).set(COOKIE, token, { httpOnly: true, sameSite: "lax", secure: (process.env.APP_URL ?? "").startsWith("https"), path: "/", maxAge: SESSION_DAYS * 86400 });
+  await db.session.create({ data: { userId, tokenHash: sessionHash(token), expiresAt: new Date(Date.now() + SESSION_DAYS * 864e5), userAgent: h.get("user-agent")?.slice(0, 200), ip: await clientIp() } });
+  // Secure (https-only) in production no matter what; HTTP-only so scripts cannot read it; SameSite=Lax blocks cross-site posts.
+  (await cookies()).set(COOKIE, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production" || (process.env.APP_URL ?? "").startsWith("https"), path: "/", maxAge: SESSION_DAYS * 86400 });
 }
 
 export async function destroySession() {
   const jar = await cookies(); const t = jar.get(COOKIE)?.value;
-  if (t) await db.session.deleteMany({ where: { tokenHash: sha256(t) } });
+  if (t) await db.session.deleteMany({ where: { tokenHash: sessionHash(t) } });
   jar.delete(COOKIE);
 }
 
 export async function getUser() {
   const t = (await cookies()).get(COOKIE)?.value; if (!t) return null;
-  const s = await db.session.findUnique({ where: { tokenHash: sha256(t) }, include: { user: true } });
+  const s = await db.session.findUnique({ where: { tokenHash: sessionHash(t) }, include: { user: true } });
   if (!s || s.expiresAt < new Date()) return null;
   return s.user;
 }

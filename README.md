@@ -27,7 +27,7 @@ pnpm install
 copy .env.example .env
 pnpm secrets
 ```
-`pnpm secrets` prints three values (`APP_ENCRYPTION_KEY`, `CRON_SECRET`, `SETUP_TOKEN`). Open `.env` in a text editor and paste them over the empty/placeholder lines. Keep `.env` private. It is never committed to git.
+`pnpm secrets` prints four values (`AUTH_SECRET`, `ENCRYPTION_KEY`, `CRON_SECRET`, `SETUP_TOKEN`). Open `.env` in a text editor and paste them over the empty/placeholder lines. Keep `.env` private. It is never committed to git.
 
 **Step 3. Start the database** (runs on port **5433**, so it does not clash with other Postgres containers)
 ```powershell
@@ -89,12 +89,12 @@ Money rules built in: a payment cannot exceed its invoice balance; an invoice ca
 * Weekly review reminder: default **Sunday 6:00 PM Africa/Accra** (change in Settings).
 * Also: task deadlines/overdue, follow-ups, overdue invoices, critical problems, priority deadlines, contract expiry.
 * **In-app** (bell and Notifications page) always works. **Browser notifications** need you to press the button in Settings and say yes; if you say no, in-app reminders still work.
-* **Notifications when the app is closed (push)** need VAPID keys: run `pnpm vapid`, paste the three lines into `.env`, restart.
+* **Notifications when the app is closed (push)** need VAPID keys: run `pnpm vapid`, paste the two lines into `.env`, restart.
 * Optional external cron instead of the built-in scheduler: `POST /api/cron/reminders` with header `x-cron-secret: <CRON_SECRET>`.
 
 ## 4. AI executive summary
 
-Settings → **AI summary**: choose Anthropic or OpenAI (or a compatible base URL), paste a key. The key is encrypted in the database (AES-256-GCM, needs `APP_ENCRYPTION_KEY`) and never sent back to the browser. With no key, or if the AI call fails, a built-in **rule-based writer** produces the summary from the same facts. Both only use recorded data and say "not recorded" where data is missing.
+Settings → **AI summary**: choose Anthropic or OpenAI (or a compatible base URL), paste a key. The key is encrypted in the database (AES-256-GCM, needs `ENCRYPTION_KEY`) and never sent back to the browser. With no key, or if the AI call fails, a built-in **rule-based writer** produces the summary from the same facts. Both only use recorded data and say "not recorded" where data is missing.
 
 ## 5. Backups
 
@@ -106,11 +106,7 @@ Also copy the `storage\uploads` folder (logo, receipts, contracts). Keep copies 
 
 ## 6. Deploying to a server
 
-1. Provision PostgreSQL 16 and Node 20+. Set `DATABASE_URL`, `APP_URL` (your https address), `SETUP_TOKEN`, `APP_ENCRYPTION_KEY`, `CRON_SECRET`, and optionally `SMTP_*` and `VAPID_*`.
-2. `pnpm install --frozen-lockfile` → `pnpm db:deploy` → `pnpm db:seed` → `pnpm build` → `pnpm start` (port 3000) behind HTTPS (Caddy or nginx). HTTPS is required for installing the PWA and for push.
-3. Open `/setup` once to create the CEO account, then remove or rotate `SETUP_TOKEN`.
-4. Run one app instance (the rate limiter is in memory) or put `POST /api/cron/reminders` on an external cron and keep `pnpm start` single-instance.
-5. Schedule `pnpm db:backup` daily and copy the files off the server.
+The project is ready for **Render** (Frankfurt) at https://ceo.wagnovate.com. See **[DEPLOY.md](DEPLOY.md)** for the step-by-step guide and `render.yaml` for the Blueprint (web service + persistent disk + PostgreSQL + reminder cron job).
 
 ## 7. Security notes
 

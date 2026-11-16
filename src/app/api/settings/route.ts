@@ -1,19 +1,20 @@
 import { z } from "zod";
 import { route, AppError } from "@/server/api";
 import { db } from "@/server/db";
-import { encrypt } from "@/server/crypto";
+import { encrypt, hasEncryptionKey } from "@/server/crypto";
 import { getCompany, getSettings } from "@/server/settings";
 import { describeSchedule } from "@/server/schedule";
 import { pushConfigured } from "@/server/reminders";
+import { envAiKey } from "@/server/summary";
 
 async function view(userId: string) {
   const [company, s, user, subs] = await Promise.all([getCompany(), getSettings(), db.user.findUniqueOrThrow({ where: { id: userId } }), db.pushSubscription.count({ where: { userId } })]);
   const { aiKeyEnc, ...rest } = s; // the encrypted key never leaves the server
   return {
-    company, settings: { ...rest, aiKeySet: !!aiKeyEnc }, scheduleText: describeSchedule(s),
+    company, settings: { ...rest, aiKeySet: !!aiKeyEnc || !!envAiKey() }, scheduleText: describeSchedule(s),
     user: { id: user.id, name: user.name, email: user.email, avatarDocId: user.avatarDocId },
-    push: { configured: pushConfigured(), publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "", subscriptions: subs },
-    emailConfigured: !!process.env.SMTP_HOST, encryptionConfigured: /^[0-9a-f]{64}$/i.test(process.env.APP_ENCRYPTION_KEY ?? ""),
+    push: { configured: pushConfigured(), publicKey: process.env.VAPID_PUBLIC_KEY ?? "", subscriptions: subs },
+    emailConfigured: !!process.env.SMTP_HOST, encryptionConfigured: hasEncryptionKey(),
   };
 }
 export const GET = route({}, async ({ user }) => view(user.id));
@@ -36,7 +37,7 @@ export const PATCH = route({ body }, async ({ user, body }) => {
     case "ai": {
       const data: Record<string, unknown> = { aiProvider: body.aiProvider, aiModel: body.aiModel || null, aiBaseUrl: body.aiBaseUrl || null, aiAutoSummary: body.aiAutoSummary };
       if (body.clearKey) data.aiKeyEnc = null;
-      else if (body.apiKey) { if (!/^[0-9a-f]{64}$/i.test(process.env.APP_ENCRYPTION_KEY ?? "")) throw new AppError(400, "Set APP_ENCRYPTION_KEY in .env (run: pnpm secrets) before saving an API key."); data.aiKeyEnc = encrypt(body.apiKey.trim()); }
+      else if (body.apiKey) { if (!hasEncryptionKey()) throw new AppError(400, "Set ENCRYPTION_KEY (run: pnpm secrets) before saving an API key."); data.aiKeyEnc = encrypt(body.apiKey.trim()); }
       await db.applicationSettings.update({ where: { id: "settings" }, data });
       break;
     }

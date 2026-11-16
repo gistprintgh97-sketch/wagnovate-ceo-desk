@@ -8,7 +8,7 @@ export function middleware(req: NextRequest) {
   if (
     PUBLIC.includes(pathname) ||
     pathname.startsWith("/api/auth/") ||
-    pathname.startsWith("/api/cron/") ||
+    pathname.startsWith("/api/cron/") || pathname === "/api/health" ||
     pathname === "/api/branding/logo" ||
     pathname.startsWith("/icons/")
   ) return NextResponse.next();

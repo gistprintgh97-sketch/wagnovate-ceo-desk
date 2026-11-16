@@ -1,10 +1,17 @@
 node_modules
 .next
+# secrets: only .env.example (placeholders) may be committed
 .env
-.env.local
+.env.*
+!.env.example
+*.pem
+*.key
 storage/*
 !storage/.gitkeep
 backups
+*.sql
+!prisma/migrations/**/*.sql
 *.tsbuildinfo
 next-env.d.ts
 .dev.log
+*.log

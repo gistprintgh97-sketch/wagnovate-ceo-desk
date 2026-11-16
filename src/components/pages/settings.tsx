@@ -197,7 +197,7 @@ function AI({ s, save }: { s: S; save: (b: any) => void }) {
         <Field id="ai-u" l="Custom base URL (optional)"><input id="ai-u" className="field" value={f.aiBaseUrl} onChange={(e) => setF({ ...f, aiBaseUrl: e.target.value })} placeholder="https://…" /></Field>
       </div>
       <div className="mt-3"><Toggle id="ai-auto" l="Write the summary with AI automatically when I complete a review" v={f.aiAutoSummary} on={(b) => setF({ ...f, aiAutoSummary: b })} /></div>
-      {!s.encryptionConfigured && <p className="mt-2 text-xs text-warn">APP_ENCRYPTION_KEY is not set in .env, so an API key cannot be saved yet. Run <code>pnpm secrets</code>.</p>}
+      {!s.encryptionConfigured && <p className="mt-2 text-xs text-warn">ENCRYPTION_KEY is not set, so an API key cannot be saved yet. Run <code>pnpm secrets</code>.</p>}
       <div className="mt-4 flex flex-wrap justify-end gap-2">
         {s.settings.aiKeySet && <Button variant="danger" onClick={() => save({ section: "ai", ...f, aiModel: f.aiModel || null, aiBaseUrl: f.aiBaseUrl || null, clearKey: true })}>Remove saved key</Button>}
         <Button variant="primary" onClick={() => { save({ section: "ai", ...f, aiModel: f.aiModel || null, aiBaseUrl: f.aiBaseUrl || null, ...(key ? { apiKey: key } : {}) }); setKey(""); }}>Save AI settings</Button>

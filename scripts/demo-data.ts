@@ -30,6 +30,11 @@ async function wipe() {
 }
 
 async function main() {
+  const app = process.env.APP_URL ?? "";
+  if (process.env.NODE_ENV === "production" || process.env.RENDER || (app.startsWith("https://") && !/localhost|127\.0\.0\.1/.test(app))) {
+    console.error("Refusing to add DEMO data to a production database. Demo data is for your own computer only.");
+    process.exit(1);
+  }
   if (process.argv.includes("--wipe")) await wipe();
   if ((await db.customer.count()) + (await db.financialTransaction.count()) > 0) {
     console.log("The database already has business records. Run with --wipe to replace them with demo data.");
