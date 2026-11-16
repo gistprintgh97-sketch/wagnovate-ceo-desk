@@ -3,7 +3,11 @@
    - Pages: network first; if offline, show /offline.html.
    - API calls are NEVER cached or queued: the app does not pretend an offline save worked.
    - Push: shows reminders sent by the server even when the app is closed. */
-const VERSION = "ceo-desk-v1";
+const VERSION = "ceo-desk-v2";
+// Never cache anything while developing on this computer, so code changes always show up.
+const DEV = ["localhost", "127.0.0.1", "[::1]"].includes(self.location.hostname);
+// Production build files have a content hash in the name (e.g. page-4f9a1c2b.js), so they are safe to keep forever.
+const HASHED = /-[0-9a-f]{8,}\.(js|css|woff2?)$/;
 const SHELL = ["/offline.html", "/icons/icon-192.png", "/icons/icon.svg"];
 
 self.addEventListener("install", (e) => {
@@ -20,13 +24,13 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
+  if (DEV || url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
 
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).catch(() => caches.match("/offline.html")));
     return;
   }
-  if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/")) {
+  if ((url.pathname.startsWith("/_next/static/") && HASHED.test(url.pathname)) || url.pathname.startsWith("/icons/")) {
     e.respondWith(
       caches.match(req).then((hit) => hit || fetch(req).then((res) => {
         const copy = res.clone();
